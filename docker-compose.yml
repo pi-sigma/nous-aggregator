@@ -1,0 +1,45 @@
+version: "3"
+
+services:
+  db:
+    image: postgres
+    volumes:
+      - db:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    ports:
+      - '5432:5432'
+
+  web:
+    image: nous_aggregator
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_HOST: "${DATABASE_HOST}"
+      DATABASE_PORT: "${DATABASE_PORT}"
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+  scheduler:
+    image: nous_aggregator
+    environment:
+      DATABASE_HOST: "${DATABASE_HOST}"
+      DATABASE_PORT: "${DATABASE_PORT}"
+    command: >
+      sh -c "python manage.py scrape"
+    volumes:
+      - .:/usr/src/app
+    depends_on:
+      - web
+      - db
+
+volumes:
+  db:

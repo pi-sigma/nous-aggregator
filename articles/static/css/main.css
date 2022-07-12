@@ -1,0 +1,128 @@
+/* HTML Tags */
+body {
+  font-family: "Montserrat", sans-serif;
+}
+
+a {
+  text-decoration: none;
+}
+
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+hr {
+  margin: 0;
+  padding: 4px 0;
+}
+
+/* ******
+ * Navbar
+ * ******/
+.navbar {
+  padding: 0px 7vw;
+  background: #333333;
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}
+
+.navbar-brand,
+.navbar-brand:hover {
+  margin-right: 4rem;
+  padding: 5px 7px;
+  font-family: "Ubuntu", sans-serif;
+  background: #E83A14;
+  color: #FFF;
+}
+
+.navbar-nav .nav-item .nav-link {
+  font-family: "Ubuntu", sans-serif;
+  color: #FFF;
+}
+
+.search-field,
+.search-field:focus {
+  height: 32px;
+  box-shadow: none;
+}
+
+.search-button {
+  height: 32px;
+  line-height: 15px;
+  color: #FFF;
+  border-color: #FFF;
+}
+.search-button:focus,
+.search-button:hover {
+  border-color: #E83A14;
+  background: #E83A14;
+  box-shadow: none!important;
+}
+
+.navbar-toggler {
+  background: #FFF;
+}
+.navbar-toggler-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.undo-button {
+  margin-left: 1rem;
+}
+.fa-undo {
+  margin-top: 8px;
+  color: #fff;
+}
+.fa-undo:hover {
+  color: #E83A14;
+}
+
+@media (max-width: 990px) {
+  .search-field {
+    margin-bottom: 10px;
+  }
+}
+
+/* ********
+ * Articles
+ * ********/
+.container-sources{
+  padding: 3rem 0 0 0;
+}
+
+.container-articles-outer {
+  max-width: 30rem;
+  padding: 2rem 1rem;
+}
+
+/* scrolling */
+.container-articles-inner {
+  padding: 0;
+  max-height: 25rem;
+  -ms-overflow-style: none; /* for Internet Explorer, Edge */
+  scrollbar-width: none; /* for Firefox */
+  overflow-y: scroll;
+}
+.container-articles-inner::-webkit-scrollbar {
+    display: none; /* for Chrome, Safari, Opera */
+}
+
+.source-link {
+  display: inline-block;
+  color: #E83A14;
+}
+
+.article-link {
+  font-size: 14px;
+  color: #000;
+}
+
+.article-headline {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

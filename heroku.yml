@@ -1,0 +1,19 @@
+setup:
+  addons:
+    - plan: heroku-postgresql
+
+build:
+  docker:
+    web: Dockerfile
+
+release:
+  command:
+    - python manage.py migrate
+  image: web
+
+run:
+  web: gunicorn nous_aggregator.wsgi
+  worker:
+    command:
+      - python manage.py scrape
+    image: web
