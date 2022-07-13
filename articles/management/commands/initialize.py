@@ -1,4 +1,4 @@
-"""Scheduler for initializing an empty database"""
+"""Scheduler for initializing an empty database. Uses the `sitemaps` from the scraper module"""
 import logging
 
 from apscheduler.executors.pool import ThreadPoolExecutor
@@ -6,7 +6,7 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 from django.core.management.base import BaseCommand
 from django.db import IntegrityError
 
-from .sitemaps import sitemaps as maps
+from articles.scraper.sitemaps import sitemaps as maps
 from articles.models import Language
 from articles.models import PublicationType
 from articles.models import Source
@@ -15,7 +15,7 @@ from articles.models import Source
 logger = logging.getLogger(__name__)
 
 
-def initialize_db_languages() -> None:
+def initialize_db_languages():
     """Initialize database with languages."""
     try:
         Language.objects.get(pk=1)
@@ -29,7 +29,7 @@ def initialize_db_languages() -> None:
             pass
 
 
-def initialize_db_pubtypes() -> None:
+def initialize_db_pubtypes():
     """Initialize database with publication types."""
     try:
         PublicationType.objects.get(pk=1)
@@ -43,7 +43,7 @@ def initialize_db_pubtypes() -> None:
             pass
 
 
-def initialize_db_sources(sitemaps: dict) -> None:
+def initialize_db_sources(sitemaps: dict):
     """Initialize database with sources in accordance with `sitemaps`."""
     try:
         Source.objects.get(pk=1)

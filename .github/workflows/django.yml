@@ -37,13 +37,6 @@ jobs:
       run: docker-compose build
     - name: Run tests
       env:
-        ALLOWED_HOSTS: ${{secrets.ALLOWED_HOSTS}}
-        CSRF_TRUSTED_ORIGINS: ${{secrets.CSRF_TRUSTED_ORIGINS}}
-        SECRET_KEY: ${{secrets.SECRET_KEY}}
-        DATABASE_ENGINE: ${{secrets.DATABASE_ENGINE}}
-        DATABASE_NAME: ${{secrets.DATABASE_NAME}}
-        DATABASE_USER: ${{secrets.DATABASE_USER}}
-        DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD}}
-        DATABASE_HOST: ${{secrets.DATABASE_HOST}}
-        DATABASE_PORT: ${{secrets.DATABASE_PORT}}
+        DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
+        DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
       run: docker-compose run --rm web pytest --disable-warnings articles/tests.py

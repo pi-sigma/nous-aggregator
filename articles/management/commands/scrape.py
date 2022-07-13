@@ -32,36 +32,31 @@ INTERVAL = 480  # interval in minutes for scraping
 def scrape(sitemap: dict) -> None:
     """Scrape newspapers/journals and store articles in database."""
     Spider.crawl(sitemap)
-
     data = [json.loads(article) for article in Spider.articles]
-    old_articles = Article.objects.all()
 
-    new_articles = []
     for article_data in data:
-        if not old_articles.filter(link=article_data["link"]).exists():
-            article = Article(
-                headline=article_data["headline"],
-                source=Source.objects.get(link=article_data["source_link"]),
-                body=article_data["body"],
-                language=Language.objects.get(name=article_data["language"]),
-                link=article_data["link"],
-                pubdate=make_aware(datetime.now()),
-            )
-            new_articles.append(article)
-    try:
-        Article.objects.bulk_create(new_articles)
-    except IntegrityError as e:
-        logger.error("Failed to add articles to db (%s)", e)
+        article = Article(
+            headline=article_data["headline"],
+            source=Source.objects.get(link=article_data["source_link"]),
+            body=article_data["body"],
+            language=Language.objects.get(name=article_data["language"]),
+            link=article_data["link"],
+            pubdate=make_aware(datetime.now()),
+        )
+        try:
+            article.save()
+        except IntegrityError as e:
+            logger.error("Article (%s) already exists in database (%s)", article_data["headline"], e)
 
 
-def delete_old_job_executions(max_age=604_800) -> None:
+def delete_old_job_executions(max_age=604_800):
     """Deletes all apscheduler job execution logs older than `max_age`."""
     DjangoJobExecution.objects.delete_old_job_executions(max_age)
 
 
 class Command(BaseCommand):
     """Create jobs."""
-    def handle(self, *args, **options) -> None:
+    def handle(self, *args, **options):
         scheduler = BlockingScheduler(
             timezone=settings.TIME_ZONE, executors={"default": ThreadPoolExecutor(1)},
         )

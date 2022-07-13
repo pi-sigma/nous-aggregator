@@ -13,7 +13,7 @@
 	<div><a class="source-link" href="{{ source.link }}"><h5 class="source-name">{{ source.name }}</h5></a></div>
 	<div class="container-articles-inner">
 	<ul>
-	  {% for article in article_list %}
+	  {% for article in article_list|slice:":10" %}
 	    {% if article.source.name == source.name %}
 	    <li>
 	      <div class="article-headline">

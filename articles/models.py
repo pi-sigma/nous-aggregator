@@ -8,7 +8,7 @@ class Article(models.Model):
     source = models.ForeignKey(
         "Source", on_delete=models.CASCADE, related_name="articles"
     )
-    body = models.TextField(null=True)
+    body = models.TextField(null=True, blank=True)
     language = models.ForeignKey(
         "Language", null=True, blank=True, on_delete=models.SET_NULL
     )
@@ -21,6 +21,9 @@ class Article(models.Model):
     class Meta:
         ordering = ("-pubdate",)
         indexes = [models.Index(fields=["headline", "link"])]
+        constraints = [
+            models.UniqueConstraint(fields=["headline", "source"], name="unique headline")
+        ]
 
 
 class Language(models.Model):

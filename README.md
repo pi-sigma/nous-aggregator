@@ -3,4 +3,4 @@
 [![Django CI](https://github.com/pi-sigma/test/actions/workflows/django.yml/badge.svg)](https://github.com/pi-sigma/test/actions/workflows/django.yml)
 
 ## Overview
-A news aggregator that collects metadata from various sources.
+A content aggregator that collects metadata about articles from newspapers, journals, blogs, etc.

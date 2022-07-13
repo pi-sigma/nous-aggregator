@@ -42,3 +42,4 @@ dmypy.json
 ### Other
 tags
 tags.*
+.pre-commit-config.yaml

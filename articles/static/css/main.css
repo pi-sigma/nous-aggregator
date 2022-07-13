@@ -1,6 +1,9 @@
-/* HTML Tags */
 body {
-  font-family: "Montserrat", sans-serif;
+  font-family: sans-serif;
+}
+
+h1,h2,h3,h4,h5 {
+  font-family: "Ubuntu", sans-serif;
 }
 
 a {
@@ -99,20 +102,9 @@ hr {
   padding: 2rem 1rem;
 }
 
-/* scrolling */
-.container-articles-inner {
-  padding: 0;
-  max-height: 25rem;
-  -ms-overflow-style: none; /* for Internet Explorer, Edge */
-  scrollbar-width: none; /* for Firefox */
-  overflow-y: scroll;
-}
-.container-articles-inner::-webkit-scrollbar {
-    display: none; /* for Chrome, Safari, Opera */
-}
-
-.source-link {
-  display: inline-block;
+.source-name {
+  font-weight: 500;
+  font-size: 19px;
   color: #E83A14;
 }
 

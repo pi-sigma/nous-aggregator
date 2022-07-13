@@ -1,6 +1,7 @@
-"""A datapool that contains `sitemaps` with information about the webpages targeted
-for scraping; in particular, information concerning the HTML and CSS structure used
-by the scraper."""
+"""A datapool of `sitemaps` with information about the structure of the pages targeted
+for scraping. This file is used to initialize an empty database; the data is then used
+by the scraper to extract the metadata about the articles.
+"""
 
 sitemaps = [
     {
