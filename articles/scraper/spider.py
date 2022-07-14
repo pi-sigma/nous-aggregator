@@ -58,7 +58,7 @@ class Spider:
         else:
             return response
 
-    async def get_links(self, asession: AsyncHTMLSession, url: str):
+    async def get_links(self, asession: AsyncHTMLSession, url: str) -> None:
         """Get all article links at `url` and filter them via regex."""
         response = await Spider.connect(asession, url)
         if response:
@@ -72,7 +72,7 @@ class Spider:
                 if self.sitemap["filter"].search(link):
                     self.links.add(link)
 
-    async def scrape(self, asession: AsyncHTMLSession, url: str):
+    async def scrape(self, asession: AsyncHTMLSession, url: str) -> None:
         """Scrape the page at `url` and store data as JSON."""
         response = await Spider.connect(asession, url)
         if response:
@@ -81,18 +81,18 @@ class Spider:
             if article:
                 Spider.articles.add(article)
 
-    async def collect_links(self, asession: AsyncHTMLSession):
+    async def collect_links(self, asession: AsyncHTMLSession) -> None:
         """Create & gather tasks for collection of links."""
         coros = [self.get_links(asession, url) for url in self.starting_urls]
         await asyncio.gather(*coros)
 
-    async def collect_metadata(self, asession: AsyncHTMLSession):
+    async def collect_metadata(self, asession: AsyncHTMLSession) -> None:
         """Create & gather tasks for scraping."""
         coros = [self.scrape(asession, link) for link in self.links]
         await asyncio.gather(*coros)
 
     @staticmethod
-    def crawl(sitemap: dict):
+    def crawl(sitemap: dict) -> None:
         """Create spider instance and run the event loop."""
         spider = Spider(sitemap)
         loop = asyncio.new_event_loop()

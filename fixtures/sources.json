@@ -173,16 +173,9 @@
     "regex": "/[0-9]{4}/[0-9]{2}/[0-9]{2}/",
     "headline": {
       "tag": "h1",
-      "attrs": {
-        "data-testid": "headline"
-      }
+      "attrs": {}
     },
-    "body": {
-      "tag": "section",
-      "attrs": {
-        "class": "meteredContent"
-      }
-    }
+    "body": null
   }
 },
 {

@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 INTERVAL = 480  # interval in minutes for scraping
 
 
-def scrape(sitemap: dict) -> None:
+def scrape(sitemap: dict):
     """Scrape newspapers/journals and store articles in database."""
     Spider.crawl(sitemap)
     data = [json.loads(article) for article in Spider.articles]
