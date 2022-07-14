@@ -21,9 +21,6 @@ class Article(models.Model):
     class Meta:
         ordering = ("-pubdate",)
         indexes = [models.Index(fields=["headline", "link"])]
-        constraints = [
-            models.UniqueConstraint(fields=["headline", "source"], name="unique headline")
-        ]
 
 
 class Language(models.Model):
