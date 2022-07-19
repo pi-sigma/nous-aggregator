@@ -1,4 +1,4 @@
-"""Provides access the the Spider class for extracting metadata of articles"""
+"""Provides access the the Spider class"""
 import asyncio
 import logging
 import random
@@ -18,27 +18,32 @@ logger = logging.getLogger(__name__)
 
 class Spider:
     """
+    The Spider class is for extracting article metadata.
+
     Class Attributes:
         headers (list): a collection of HTTP headers
-        articles (set): a collection of JSON strings representing article metadata
+        articles (set): a collection of JSON strings representing article
+            metadata
 
     Instance Attributes:
         sitemap (dict): contains information about a particular page
-        starting_urls (list): the urls where each Spider object searches for links
+        starting_urls (list): the urls where each Spider object searches for
+            links
         links (set): urls of pages targeted for scraping
 
     Public Methods:
-        crawl(sitemap): the main method of the Spider class; called from apscheduler
-        which supplies the argument `sitemap`; creates a spider object for `sitemap`
-        and runs the event loop.
+        crawl(sitemap): the main method of the Spider class; called from the
+            scheduler which supplies the argument `sitemap`; creates a spider
+            object for `sitemap` and runs the event loop.
     """
 
     headers = headers.headers
     articles: set[str] = set()
 
     def __init__(self, sitemap: dict):
-        """A Spider object collects links on the pages in `starting_urls`, scrapes
-        the pages, and stores the data in the class attribute `articles`."""
+        """A Spider object collects links on the pages in `starting_urls`,
+        scrapes the pages, and stores the data in the class attribute
+        `articles`."""
         self.sitemap = sitemap
         self.starting_urls = [
             self.sitemap["base_url"] + path for path in self.sitemap["paths"]
@@ -46,7 +51,8 @@ class Spider:
         self.links: set[str] = set()
 
     @staticmethod
-    async def connect(asession: AsyncHTMLSession, url: str) -> Optional[HTMLResponse]:
+    async def connect(asession: AsyncHTMLSession,
+                      url: str) -> Optional[HTMLResponse]:
         """GET request wrapper."""
         try:
             response = await asession.get(
@@ -58,7 +64,7 @@ class Spider:
         else:
             return response
 
-    async def get_links(self, asession: AsyncHTMLSession, url: str) -> None:
+    async def get_links(self, asession: AsyncHTMLSession, url: str):
         """Get all article links at `url` and filter them via regex."""
         response = await Spider.connect(asession, url)
         if response:

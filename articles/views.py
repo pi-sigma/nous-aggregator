@@ -7,9 +7,6 @@ from .models import Article
 from .models import Source
 
 
-TIMESPAN = 7  # no. of days
-
-
 def index(request):
     """Display latest articles for all sources."""
     context = {
@@ -27,13 +24,16 @@ class SearchResultsView(ListView):
     def get_context_data(self, **kwargs):
         """Filter sources by query."""
         query = self.request.GET.get("q")
+        # precaution: empty strings are also excluded on the client-side
+        if query in ("", " ", "  "):
+            query = "Please don't attempt to hack my website, thanks!"
         regex = r"(?<![a-zA-Z])" + re.escape(query) + r"(?![a-rA-Rt-zT-Z])"
-        context = super(SearchResultsView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context.update(
             {
-                "sources": Source.objects.only("name", "link", "publication_type").filter(
-                    articles__headline__iregex=regex,
-                ).distinct(),
+                "sources": Source.objects.only(
+                    "name", "link", "publication_type").filter(
+                        articles__headline__iregex=regex).distinct(),
                 "query": query,
             },
         )

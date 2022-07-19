@@ -23,11 +23,12 @@ hr {
   padding: 4px 0;
 }
 
+
 /* ******
  * Navbar
  * ******/
 .navbar {
-  padding: 0px 7vw;
+  padding: 0;
   background: #333333;
   overflow: hidden;
   position: fixed;
@@ -96,12 +97,27 @@ hr {
  * Articles
  * ********/
 .container-sources{
-  padding: 4rem 0 0 0;
+  padding: 4rem 0 2.5rem 0rem;
 }
 
 .container-articles-outer {
   max-width: 30rem;
   padding: 1rem;
+}
+
+.container-articles-inner {
+  padding: 0;
+  max-height: 18rem;
+}
+
+/* scrolling */
+.container-scrolling {
+  -ms-overflow-style: none; /* for Internet Explorer, Edge */
+  scrollbar-width: none; /* for Firefox */
+  overflow-y: scroll;
+}
+.container-scrolling::-webkit-scrollbar {
+    display: none; /* for Chrome, Safari, Opera */
 }
 
 .source-name {

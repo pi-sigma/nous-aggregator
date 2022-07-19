@@ -46,7 +46,10 @@ def scrape(sitemap: dict):
         try:
             article.save()
         except IntegrityError as e:
-            logger.error("Article (%s) already exists in database (%s)", article_data["headline"], e)
+            logger.error(
+                "Article (%s) already exists in database (%s)",
+                article_data["headline"], e
+            )
 
 
 def delete_old_job_executions(max_age=604_800):
@@ -58,7 +61,8 @@ class Command(BaseCommand):
     """Create jobs."""
     def handle(self, *args, **options):
         scheduler = BlockingScheduler(
-            timezone=settings.TIME_ZONE, executors={"default": ThreadPoolExecutor(1)},
+            timezone=settings.TIME_ZONE,
+            executors={"default": ThreadPoolExecutor(1)},
         )
         scheduler.add_jobstore(DjangoJobStore(), "default")
 
@@ -79,7 +83,7 @@ class Command(BaseCommand):
                     max_instances=1,
                     replace_existing=True,
                 )
-                logger.info(f"Added daily job: {source_id}.")
+                logger.info("Added daily job: %s.", source_id)
 
         # delete old job executions
         try:

@@ -39,7 +39,7 @@ Build the Docker image (can take a while the first time around):
 docker-compose build
 ```
 
-Start the web container in detached mode (attempting to start the container for the scheduler at this point will result in an error because the database is empty):
+Start the web container in detached mode (attempting to start the container for the scheduler/scraper at this point will result in an error because the database is empty):
 ```sh
 docker-compose up -d web
 ```
@@ -87,12 +87,12 @@ Enter your username and password to log in, then go to "Django Jobs" in the pane
 Jobs can be tweaked and created from within the admin area. Here are some example settings:
 ```sh
 base_url: "https://www.example.com/"
-paths: ["sections/world", "sections/national"]
+paths: ["path1/", "path2/"]
 regex: "/[0-9]{4}/[0-9]{2}/[0-9]{2}/"
 headline: {"tag": "h1", "attrs": {}},
-body: {"tag": "section", "attrs": {"id": "body-text"}},
+body: {"tag": "section", "attrs": {"class": "body-text"}},
 ```
-This will tell the scraper to follow links on `https://www.example.com/sections/world` and `https://www.example.com/sections/national`, and to only extract data from pages whose link contains the specified pattern, ignoring everything else (thus it will scrape `https://www.example.com/2022/06/07/some-news-story.com` but not `https://www.example.com/policies.com`. Headlines should have an HTML tag `h1`, and the body should have an HTML tag `section` with an `id` attribute `body-text`. 
+This will tell the scraper to follow links on `https://www.example.com/path1/` and `https://www.example.com/path2/`, and to only extract data from pages whose link contains the specified pattern, ignoring everything else (thus it will scrape `https://www.example.com/2022/06/07/story.com` but not `https://www.example.com/policies.com`. Headlines should have an HTML tag `h1`, and the body should have an HTML tag `section` with a `class` attribute `body-text`.
 
 In order to extract data about the sources from the database, use the following command while the web container is running (the commands for the other tables are analogous):
 ```sh
@@ -100,9 +100,16 @@ docker-compose run web python manage.py dumpdata articles.source --indent 2 > fi
 ```
 
 ## Development
-Make sure [Python 3.10](https://www.python.org/downloads/) is installed on your system.
+Tests and code linters can be run from inside a Docker container:
+```sh
+docker-compose run --rm web pytest --disable-warnings articles/tests.py
+docker-compose run --rm web mypy
+docker-compose run --rm web pytype
+docker-compose run --rm web pylint articles
+```
 
-Create a virtual environment in the root directory of the app and activate it:
+Alternatively, make sure [Python 3.10](https://www.python.org/downloads/) is installed on your system.
+Then create a virtual environment in the root directory of the app and activate it:
 ```sh
 python3.10 -m venv venv
 . venv/bin/activate
@@ -112,16 +119,12 @@ Install the requirements:
 python -m pip install -r requirements/common.txt
 python -m pip install -r requirements/dev.txt
 ```
-The following script runs Pytype and Mypy, builds the Docker image, and runs Pytest inside the container:
+Run the tests from the root directory (analogously for the other commands):
 ```sh
-./build.sh
+pytest --disable-warnings articles/tests.py
 ```
 
-The project contains a `yml` for a workflow ("Django CI") which is triggered every time the code is pushed to GitHub.
-To make this work, you need to create two action secrets on GitHub (`DATABASE_HOST`: `db`, `DATABASE_PORT`: `5432`).
-Or simply delete the .github folder to remove the workflow.
-
-You can also run the app without Docker using the familiar `python manage.py runserver` (for the web server) and `python manage.py scrape` (for the scraper). This can be useful for testing/debugging settings for the scraper in connection with a VPN, which is not trivial to set up with Docker. However, make sure you have a Postgres database listening on port `5433` or change the database configuration in `settings.py`. Also see the next point.
+It is also possible to run the app without Docker using `python manage.py runserver` (for the web server) and `python manage.py scrape` (for the scraper). This can be useful for testing/debugging settings for the scraper in connection with a VPN, which is not trivial to set up with Docker. However, make sure you have a Postgres database listening on port `5433` or change the database configuration in `settings.py`. Also see the next point.
 
 
 ## Issues
@@ -136,14 +139,13 @@ However, according to the [Python Documentation](https://docs.python.org/3/libra
 >
 > Besides, only the main thread of the main interpreter is allowed to set a new signal handler.
 
-
 As a result, every job that requires the rendering of JavaScript fails and produces the following error:
 ```
 ValueError: signal only works in main thread
 ```
 Additional information and discussion of this sort of issue can be found [here](https://bugs.python.org/issue38904).
 
-I've created a temporary workaround by disabling pyppeteer launcher's signal handling.
+I've created a temporary workaround by disabling pyppeteer's signal handling.
 The patch is applied automatically during the build of the Docker image.
 When the containers are started, the program runs normally.
-If you want to run the app outside a Docker container, you will need to create a virtual environment and install the requirements as usual, then overwrite the launcher settings by hand (see the script `patches/pyppeteer_patch.sh` for hints on how to do this).
+If you want to run the scraper outside a Docker container, you will need to overwrite the launcher settings by hand (see the files in the [patches](https://github.com/pi-sigma/nous-aggregator/tree/main/patches) folder for hints on how to do this).

@@ -1,6 +1,6 @@
 {% load static %}
-<nav class="navbar navbar-expand-lg ">
-  <div class="container-fluid">
+<nav class="navbar navbar-expand-lg fixed-top">
+  <div class="container">
     <a class="navbar-brand" href="/">Nous Aggregator</a>
 
     <!-- Toggler -->
@@ -13,13 +13,15 @@
       <!-- Links -->
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="#">Home</a>
+          <a class="nav-link active" aria-current="page" href="/">Home</a>
         </li>
       </ul>
+
       <!-- Search -->
       <form class="d-flex" role="search" action="{% url 'search' %}" method="GET">
         <input class="form-control me-2 search-field" name="q" type="text"
-	    placeholder="Search..." aria-label="Search" {% if query %} value={{ query }} {% endif %}>
+	       required pattern=".*\S+.*" title="at least one non-space character"
+	       placeholder="Search..." aria-label="Search" {% if query %} value={{ query }} {% endif %}>
 	<button class="btn btn-outline-success search-button" type="submit">Search</button>
 	<a class="undo-button" href="{% url "index" %}"><i class="fa fa-undo"></i></a>
       </form>

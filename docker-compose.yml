@@ -14,7 +14,7 @@ services:
     image: nous_aggregator
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     environment:
       DATABASE_HOST: "${DATABASE_HOST}"
       DATABASE_PORT: "${DATABASE_PORT}"

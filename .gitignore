@@ -9,6 +9,7 @@ db.sqlite3-journal
 media
 logs/
 staticfiles/
+dev/
 
 ### Unit test / coverage reports
 htmlcov/
@@ -37,7 +38,6 @@ ENV/
 .dmypy.json
 dmypy.json
 .pytype/
-.pylintrc
 
 ### Other
 tags

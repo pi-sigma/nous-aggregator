@@ -37,6 +37,6 @@ jobs:
       run: docker-compose build
     - name: Run tests
       env:
-        DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
-        DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
+        DATABASE_HOST: db
+        DATABASE_PORT: 5432
       run: docker-compose run --rm web pytest --disable-warnings articles/tests.py
