@@ -44,6 +44,11 @@ Start the web container in detached mode (attempting to start the container for 
 docker-compose up -d web
 ```
 
+Apply migrations:
+```sh
+docker-compose run web python manage.py migrate
+```
+
 Initialize the database:
 ```sh
 docker-compose run web python manage.py loaddata fixtures/languages.json
@@ -100,16 +105,9 @@ docker-compose run web python manage.py dumpdata articles.source --indent 2 > fi
 ```
 
 ## Development
-Tests and code linters can be run from inside a Docker container:
-```sh
-docker-compose run --rm web pytest --disable-warnings articles/tests.py
-docker-compose run --rm web mypy
-docker-compose run --rm web pytype
-docker-compose run --rm web pylint articles
-```
+Make sure [Python 3.10](https://www.python.org/downloads/) is installed on your system.
 
-Alternatively, make sure [Python 3.10](https://www.python.org/downloads/) is installed on your system.
-Then create a virtual environment in the root directory of the app and activate it:
+create a virtual environment in the root directory of the app and activate it:
 ```sh
 python3.10 -m venv venv
 . venv/bin/activate
@@ -119,9 +117,9 @@ Install the requirements:
 python -m pip install -r requirements/common.txt
 python -m pip install -r requirements/dev.txt
 ```
-Run the tests from the root directory (analogously for the other commands):
+Run the tests:
 ```sh
-pytest --disable-warnings articles/tests.py
+pytest articles/tests.py
 ```
 
 It is also possible to run the app without Docker using `python manage.py runserver` (for the web server) and `python manage.py scrape` (for the scraper). This can be useful for testing/debugging settings for the scraper in connection with a VPN, which is not trivial to set up with Docker. However, make sure you have a Postgres database listening on port `5433` or change the database configuration in `settings.py`. Also see the next point.

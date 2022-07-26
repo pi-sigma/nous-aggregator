@@ -1,6 +1,7 @@
 import regex  # type: ignore
 from django.db import models
 from django.db.models.functions import Lower
+from django.core.validators import URLValidator
 
 
 class Article(models.Model):
@@ -21,7 +22,7 @@ class Article(models.Model):
     Methods:
         __str__: string representation for the admin area
     """
-    headline = models.CharField(max_length=500)
+    headline = models.TextField()
     source = models.ForeignKey(
         "Source", on_delete=models.CASCADE, related_name="articles"
     )
@@ -29,7 +30,7 @@ class Article(models.Model):
     language = models.ForeignKey(
         "Language", null=True, blank=True, on_delete=models.SET_NULL
     )
-    link = models.URLField(unique=True)
+    link = models.TextField(unique=True, validators=[URLValidator()])
     pubdate = models.DateTimeField()
 
     def __str__(self):
@@ -84,8 +85,8 @@ class Source(models.Model):
         to_dict: creates a dictionary with the information required by the
             scraper
     """
-    name = models.CharField(max_length=128, unique=True)
-    link = models.URLField(max_length=128, unique=True)
+    name = models.TextField(unique=True)
+    link = models.TextField(unique=True, validators=[URLValidator()])
     publication_type = models.ForeignKey(
         "PublicationType", null=True, blank=True, on_delete=models.SET_NULL
     )
@@ -114,4 +115,3 @@ class Source(models.Model):
 
     class Meta:
         ordering = [Lower("name"), ]
-        indexes = [models.Index(fields=["link"])]
