@@ -11,7 +11,7 @@ charset-normalizer==2.0.12
 cssselect==1.1.0
 dill==0.3.4
 distlib==0.3.4
-Django==4.0.4
+Django>=4.0.6
 django-apscheduler==0.6.2
 django-on-heroku==1.1.2
 dj-database-url>=0.5.0
@@ -25,7 +25,7 @@ iniconfig==1.1.1
 isort==5.10.1
 langdetect==1.0.9
 lazy-object-proxy==1.7.1
-lxml==4.8.0
+lxml>=4.9.1
 mccabe==0.7.0
 nodeenv==1.6.0
 packaging==21.3
@@ -38,6 +38,7 @@ pyee==8.2.2
 pyparsing==3.0.9
 pyppeteer==1.0.2
 pyquery==1.4.3
+python-dotenv==0.20.0
 pytz==2022.1
 pytz-deprecation-shim==0.1.0.post0
 PyYAML==6.0

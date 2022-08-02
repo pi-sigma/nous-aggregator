@@ -16,7 +16,6 @@ docker-compose.yml
 local_settings.py
 db.sqlite3-journal
 media
-logs/
 
 ### Unit test / coverage reports
 htmlcov/

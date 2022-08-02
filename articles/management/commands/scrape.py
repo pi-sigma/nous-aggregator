@@ -46,7 +46,7 @@ def scrape(sitemap: dict):
         try:
             article.save()
         except IntegrityError as e:
-            logger.error(
+            logger.info(
                 "Article (%s) already exists in database (%s)",
                 article_data["headline"], e
             )
@@ -78,7 +78,7 @@ class Command(BaseCommand):
                     args=[source.to_dict()],
                     trigger="interval",
                     minutes=INTERVAL,
-                    misfire_grace_time=360,
+                    misfire_grace_time=600,
                     id=source_id,
                     max_instances=1,
                     replace_existing=True,

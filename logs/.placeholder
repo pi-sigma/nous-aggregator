@@ -1,0 +1,2 @@
+Log files are not committed to Git but the GitHub workflow
+errors out because of the missing folder; hence the empty directory.

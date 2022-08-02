@@ -1,0 +1,46 @@
+# This file is a template of variables that need to be set in .env
+# See the files in /nous_aggregator/settings for more instructions
+
+# Can be generated in Python shell. For example:
+  # import secrets
+  # chars = [chr(i) for i in range(0x21, 0x7F)]
+  # key_len = 64
+  # key = ''.join(secrets.choice(chars) for i in range(key_len))
+SECRET_KEY=
+
+# DEBUG should be False outside development
+DEBUG=
+
+# List of comma-separated hostnames, or * to match all hosts
+ALLOWED_HOSTS=
+
+# List of comma-separated URLS: http://example1.com,https://example2.com
+CSRF_TRUSTED_ORIGINS=
+
+# True/False
+SESSION_COOKIE_SECURE=
+
+# True/False
+CSRF_COOKIE_SECURE=
+
+# HTTP redirect. Must be False for development
+SECURE_SSL_REDIRECT=
+
+# Example: django.db.backends.postgresql
+DATABASE_ENGINE=
+
+# Example: postgres
+DATABASE_NAME=
+
+# Example: postgres
+DATABASE_USER=
+
+# Example: postgres
+DATABASE_PASSWORD=
+
+# Should be "localhost" if the app is to run without Docker
+# (either locally or on GitHub/GitLab/...)
+DATABASE_HOST=
+
+# Standard port for Postgres: 5432
+DATABASE_PORT=

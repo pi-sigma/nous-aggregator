@@ -1,31 +1,11 @@
-"""
-Django settings for nous_aggregator project
-
-For more information on this file, see
-https://docs.djangoproject.com/en/4.0/topics/settings/
-
-For the full list of settings and their values, see
-https://docs.djangoproject.com/en/4.0/ref/settings/
-"""
+"""Basic settings for nous_aggregator project."""
 import os
 from pathlib import Path
 
-import django_on_heroku
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-SECRET_KEY = os.getenv("SECRET_KEY", default="hush-hush")
-
-DEBUG = (os.getenv("DEBUG", default="True") == "True")
-
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", default="*").split(',')
-
-CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS", default="https://*").split(',')
-
-# HTTP redirect
-SECURE_SSL_REDIRECT = (os.getenv("SECURE_SSL_REDIRECT", default="False") == "True")
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+# (modified because settings files are nested one level deeper)
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
 # Application definition
@@ -75,21 +55,6 @@ TEMPLATES = [
 WSGI_APPLICATION = "nous_aggregator.wsgi.application"
 
 
-# Database
-# https://docs.djangoproject.com/en/4.0/ref/settings/#databases
-
-DATABASES = {
-    "default": {
-        "ENGINE": os.getenv("DATABASE_ENGINE", default="django.db.backends.postgresql"),
-        "NAME": os.getenv("DATABASE_NAME", default="postgres"),
-        "USER": os.getenv("DATABASE_USER", default="postgres"),
-        "PASSWORD": os.getenv("DATABASE_PASSWORD", default="postgres"),
-        "HOST": os.getenv("DATABASE_HOST", default="localhost"),
-        "PORT": os.getenv("DATABASE_PORT", default=5433),
-    },
-}
-
-
 # Logging
 
 LOG_DIR = BASE_DIR / "logs"
@@ -122,7 +87,7 @@ LOGGING = {
         'django': {
             'level': 'INFO',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': LOG_DIR / "django.log",
+            'filename': os.path.join(LOG_DIR, "django.log"),
             'maxBytes': 100000,
             'backupCount': 2,
             'formatter': 'verbose',
@@ -130,7 +95,7 @@ LOGGING = {
         'articles': {
             'level': 'INFO',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': LOG_DIR / "nous_aggregator.log",
+            'filename': os.path.join(LOG_DIR, "nous_aggregator.log"),
             'maxBytes': 1024 * 1024 * 10,  # Max 10MB
             'backupCount': 3,
             'formatter': 'simple',
@@ -181,5 +146,3 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-django_on_heroku.settings(locals())

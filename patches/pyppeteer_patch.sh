@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# The patch disables pyppeteer launcher's signal handling (line 307 in
+# The patch disables pyppeteer launcher's signal handling (line 312 in
 # pyppeteer_patch.py) since it causes an error when jobs are run in 
 # a thread created by Apscheduler. In order to patch the launcher
 # file in a virtual environment, the location of the file will be:

@@ -2,7 +2,7 @@
 
 [![Python 3.10](https://img.shields.io/badge/python-3.10-blue)](https://www.python.org/downloads/release/python-3100/)
 [![Django 4.05](https://img.shields.io/badge/django-4.0-blue)](https://docs.djangoproject.com/en/4.0/)
-[![Django CI](https://github.com/pi-sigma/test/actions/workflows/django.yml/badge.svg)](https://github.com/pi-sigma/test/actions/workflows/django.yml)
+[![Django CI](https://github.com/pi-sigma/nous-aggregator/actions/workflows/django.yml/badge.svg)](https://github.com/pi-sigma/test/actions/workflows/django.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/pi-sigma/test/blob/main/LICENSE.md)
 
 [https://www.nous-aggregator.com](https://www.nous-aggregator.com)
@@ -27,14 +27,10 @@ Inside the new directory, create a file for the environment variables:
 ```sh
 touch .env
 ```
+Open the file with the editor of your choice and set the environment variables.
+See [env-sample](https://github.com/pi-sigma/nous-aggregator/blob/main/env-sample) for instructions.
 
-Open the file with the editor of your choice and set the following values:
-```
-DATABASE_HOST=db
-DATABASE_PORT=5432
-```
-
-Build the Docker image (can take a while the first time around):
+Build the Docker image (this can take a while the first time around):
 ```sh
 docker-compose build
 ```
