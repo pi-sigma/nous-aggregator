@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 def find_headline(soup: BeautifulSoup,
                   sitemap: dict,
                   url: str) -> Optional[str]:
-    """Use `parser` & `sitemap` to extract headline from article at `url`."""
+    """Use `sitemap` to extract headline from article at `url`."""
     try:
         headline = soup.find(sitemap["headline"]["tag"],
                              attrs=sitemap["headline"]["attrs"])

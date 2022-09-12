@@ -12,9 +12,9 @@ has an empty default in order to make the app crash if it's not set and DEBUG is
 """
 import os
 from dotenv import load_dotenv
-from . basic import *
+from .basic import *
 
-load_dotenv(".env-staging")
+load_dotenv(".env")
 
 SECRET_KEY = os.getenv("SECRET_KEY", default="")
 

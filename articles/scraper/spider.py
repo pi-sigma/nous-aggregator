@@ -36,7 +36,6 @@ class Spider:
             scheduler which supplies the argument `sitemap`; creates a spider
             object for `sitemap` and runs the event loop.
     """
-
     headers = headers.headers
     articles: set[str] = set()
 

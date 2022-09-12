@@ -1,5 +1,5 @@
 """CI settings for nous_aggregator project"""
-from . local import *
+from .local import *
 
 DATABASES = {
     "default": {
