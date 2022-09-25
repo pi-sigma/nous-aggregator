@@ -11,10 +11,10 @@ DJANGO_ENV = os.getenv('DJANGO_ENV')
 
 match DJANGO_ENV:
     case "CI":
-        from . ci import *
+        from .ci import *
     case "LOCAL":
-        from . local import *
-    case "STAGE":
-        from . staging import *
+        from .local import *
+    case "STAGING":
+        from .staging import *
     case _:
-        from . production import *
+        from .production import *

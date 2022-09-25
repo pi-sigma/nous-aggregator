@@ -1,7 +1,7 @@
 import json
 
 from django.test import TestCase
-from bs4 import BeautifulSoup  # type: ignore
+from bs4 import BeautifulSoup
 
 from ..scraper.parser import find_headline, find_body, find_language, parse
 from ..models import Source, PublicationType, Language
@@ -9,8 +9,8 @@ from ..models import Source, PublicationType, Language
 
 class TestParsers(TestCase):
     def setUp(self):
-        self.html = "<html lang='en'><h1>Test Headline</h1><body>...</body><h2>Hello there!</h2></html>"
-        self.html_2 = "<html lang='en'><h1>  Test Headline  </h1><body>...</body><h2>Hello there!</h2></html>"
+        self.html = "<html lang='en'><h1>Lorem ipsum</h1><body>...</body><h2>Hello there!</h2></html>"
+        self.html_2 = "<html lang='en'><h1>  Lorem ipsum  </h1><body>...</body><h2>Hello there!</h2></html>"
         self.soup = BeautifulSoup(self.html, features="lxml")
         self.language = Language.objects.create(name="en")
         self.pubtype = PublicationType.objects.create(name="newspaper/journal")
@@ -30,7 +30,7 @@ class TestParsers(TestCase):
 
     def test_find_headline(self):
         headline = find_headline(self.soup, self.sitemap, self.url)
-        self.assertEqual(headline, "Test Headline")
+        self.assertEqual(headline, "Lorem ipsum")
 
     def test_find_body(self):
         body = find_body(self.soup, self.sitemap, self.url)
@@ -42,7 +42,7 @@ class TestParsers(TestCase):
 
     def test_parse(self):
         json_data = json.loads(parse(self.html, self.sitemap, self.url))
-        self.assertEqual(json_data["headline"], "Test Headline")
+        self.assertEqual(json_data["headline"], "Lorem ipsum")
         self.assertEqual(json_data["body"], "Hello there!")
         self.assertEqual(json_data["language"], "en")
         self.assertEqual(json_data["link"], self.url)

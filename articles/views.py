@@ -10,7 +10,7 @@ from .models import Source
 def index(request):
     """Display latest articles for all sources."""
     context = {
-        "sources": Source.objects.only("name", "link", "publication_type")
+        "sources": Source.objects.only("name", "link", "publication_type"),
     }
     return render(request, "articles/index.html", context)
 

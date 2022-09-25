@@ -1,4 +1,5 @@
 """Basic settings for nous_aggregator project."""
+
 import os
 from pathlib import Path
 
@@ -22,9 +23,11 @@ INSTALLED_APPS = [
     "articles.apps.ArticlesConfig",
     # Third Party Apps
     "django_apscheduler",
+    "debug_toolbar",
 ]
 
 MIDDLEWARE = [
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -35,6 +38,10 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "nous_aggregator.urls"
+
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
 
 TEMPLATES = [
     {
