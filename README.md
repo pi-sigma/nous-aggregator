@@ -5,7 +5,6 @@
 [![Django CI](https://github.com/pi-sigma/nous-aggregator/actions/workflows/django.yml/badge.svg)](https://github.com/pi-sigma/test/actions/workflows/django.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/pi-sigma/test/blob/main/LICENSE.md)
 
-[https://www.nous-aggregator.com](https://www.nous-aggregator.com)
 
 ## Overview
 A content aggregator that collects metadata about articles from newspapers, journals, blogs, etc.
