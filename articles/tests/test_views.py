@@ -1,155 +1,141 @@
-import datetime
+from pyquery import PyQuery as pq
+import pytest
 
-from django.test import Client, TestCase
 from django.urls import reverse
-from django.utils import timezone
 
-from ..models import Article, Language, PublicationType, Source
 
 TIMESPAN = 7  # no. of days
 
 
-class IndexViewTest(TestCase):
-    def setUp(self):
-        self.client = Client()
-        self.language = Language.objects.create(name="en")
-        self.publication_type = PublicationType.objects.create(
-            name="newspaper/journal"
-        )
+#
+# Test IndexView
+#
+@pytest.mark.django_db
+def test_index_view(
+    client,
+    source_instance,
+    article_instance
+):
+    response = client.get(reverse("index"))
+    html = response.content.decode("utf-8")
+    doc = pq(html)
 
-        # creates source
-        self.source = Source.objects.create(
-            name="The Intercept",
-            link="https://theintercept.com/",
-            publication_type=self.publication_type,
-            language=self.language,
-            paths=["world/"],
-            javascript=False,
-            regex="[0-9]{4}/[0-9]{2}/[0-9]{2}",
-            headline={"tag": "h1", "attrs": {}},
-            body={"tag": "h2", "attrs": {}},
-        )
+    assert response.status_code == 200
 
-        # create articles
-        self.article = Article.objects.create(
-            headline="Restorative Injustice",
-            source=self.source,
-            body="Lorem ipsum dolor sit amet, consectetur adipiscing elit...",
-            language=self.language,
-            link="https://theintercept.com/2022/05/08/"
-                 "maryland-campaign-brandy-brooks-progressive-accountability/",
-            pubdate=timezone.now(),
-        )
-        self.article2 = Article.objects.create(
-            headline="UK’s Johnson scrambles to regain authority after rebellion",
-            source=self.source,
-            body="Lorem ipsum dolor sit amet, consectetur adipiscing elit...",
-            language=self.language,
-            link="https://apnews.com/article/boris-johnson-theresa-may-london-"
-                 "government-and-politics-00b21e3552b95cc067ce42e163b80df9",
-            pubdate=timezone.now() - datetime.timedelta(days=TIMESPAN)
-        )
+    # assert that details of source are present in response content
+    source_name = doc.find(".source-name").text()
+    source_link = doc.find(".source-link")
+    source_link_href = source_link.attr("href")
 
-    def test_response_status(self):
-        response = self.client.get(reverse("index"))
-        self.assertEqual(response.status_code, 200)
+    assert source_name == source_instance.name
+    assert source_link.is_("a")
+    assert source_link_href == source_instance.link
 
-    def test_sources(self):
-        response = self.client.get(reverse("index"))
-        sources = response.context["sources"]
-        self.assertEqual(self.source in sources, True)
-        self.assertEqual(self.source.name, "The Intercept")
-        self.assertEqual(self.source.link, "https://theintercept.com/")
+    # assert that details of article are present in response content
+    article_headline = doc.find(".article-headline").text()
+    article_link = doc.find(".article-link")
+    article_link_href = article_link.attr("href")
+    article_link_title = article_link.attr("title")
 
-    def test_articles(self):
-        response = self.client.get(reverse("index"))
-        html = response.content.decode("utf-8")
-        source = response.context["sources"][0]
-        self.assertEqual(source, self.article.source)
-        self.assertIn(self.article.headline, html)
-        self.assertIn(self.article.link, html)
+    assert article_headline == article_instance.headline
+    assert article_link.is_("a")
+    assert article_link_href == article_instance.link
+    assert article_instance.headline in article_link_title
+    assert article_instance.body in article_link_title
 
 
-class SearchResultsViewTest(TestCase):
-    def setUp(self):
-        self.client = Client()
-        self.language = Language.objects.create(name="en")
-        self.pubtype = PublicationType.objects.create(name="newspaper/journal")
-        self.source1 = Source.objects.create(
-            name="The Intercept",
-            link="https://theintercept.com/",
-            publication_type=self.pubtype,
-            language=self.language,
-            paths=["world/"],
-            javascript=False,
-            regex="[0-9]{4}/[0-9]{2}/[0-9]{2}",
-            headline={"tag": "h1", "attrs": {}},
-            body={"tag": "h2", "attrs": {}},
-        )
-        self.source2 = Source.objects.create(
-            name="Associated Press",
-            link="https://apnews.com/",
-            publication_type=self.pubtype,
-            language=self.language,
-            paths=["world/"],
-            javascript=False,
-            regex="[0-9]{4}/[0-9]{2}/[0-9]{2}",
-            headline={"tag": "h1", "attrs": {}},
-            body={"tag": "h2", "attrs": {}},
-        )
-        self.article1 = Article.objects.create(
-            headline="Restorative Injustice",
-            source=self.source1,
-            body="Lorem ipsum dolor sit amet, consectetur adipiscing elit...",
-            language=self.language,
-            link="https://theintercept.com/2022/05/08/"
-            "maryland-campaign-brandy-brooks-progressive-accountability/",
-            pubdate=timezone.now(),
-        )
-        self.article2 = Article.objects.create(
-            headline="UK’s Johnson scrambles to regain authority after rebellion",
-            source=self.source2,
-            body="Lorem ipsum dolor sit amet, consectetur adipiscing elit...",
-            language=self.language,
-            link="https://apnews.com/article/boris-johnson-theresa-may-london-"
-                 "government-and-politics-00b21e3552b95cc067ce42e163b80df9",
-            pubdate=timezone.now()
-        )
+#
+# Test SearchResultsView
+#
+@pytest.mark.django_db
+def test_search_results_view(
+    client,
+    source_instance,
+    source_instance_2,
+    article_values,
+    article_instance,
+    article_instance_2,
+):
+    query_params = {"q": article_values["headline"][:5]}
+    response = client.get(reverse("search"), query_params)
+    html = response.content.decode("utf-8")
+    doc = pq(html)
 
-    def test_response_status(self):
-        response = self.client.get(reverse("search"), {"q": "scrambles"})
-        self.assertEqual(response.status_code, 200)
+    assert response.status_code == 200
 
-    def test_search_successful(self):
-        response = self.client.get(reverse("search"), {"q": "scrambles"})
-        html = response.content.decode("utf-8")
-        source = response.context["sources"][0]
+    # assert that details of source matching query are present in response content
+    source_name = doc.find(".source-name").text()
+    source_link = doc.find(".source-link")
+    source_link_href = source_link.attr("href")
 
-        self.assertEqual(source, self.article2.source)
-        self.assertIn(self.article2.headline, html)
-        self.assertIn(self.article2.link, html)
-        self.assertNotIn(self.article1.headline, html)
+    assert source_name == source_instance.name
+    assert source_link.is_("a")
+    assert source_link_href == source_instance.link
 
-    def test_search_unrelated(self):
-        """Completely unrelated words should not trigger"""
-        response = self.client.get(reverse("search"), {"q": "ROFL"})
-        html = response.content.decode("utf-8")
+    # assert that details of article matching query are present in response content
+    article_headline = doc.find(".article-headline").text()
+    article_link = doc.find(".article-link")
+    article_link_href = article_link.attr("href")
+    article_link_title = article_link.attr("title")
 
-        self.assertNotIn(self.source1.name, html)
-        self.assertNotIn(self.source2.name, html)
-        self.assertNotIn(self.article1.headline, html)
-        self.assertNotIn(self.article2.headline, html)
-        self.assertNotIn(self.article1.link, html)
-        self.assertNotIn(self.article2.link, html)
+    assert article_headline == article_instance.headline
+    assert article_link.is_("a")
+    assert article_link_href == article_instance.link
+    assert article_instance.headline in article_link_title
+    assert article_instance.body in article_link_title
 
-    def test_search_substring(self):
-        """Substrings of query should not trigger"""
-        response = self.client.get(reverse("search"), {"q": "justice"})
-        html = response.content.decode("utf-8")
+    # assert that details of non-matching source are not found
+    assert source_instance_2.name not in html
+    assert source_instance_2.link not in html
 
-        self.assertNotIn(self.source1.name, html)
-        self.assertNotIn(self.source2.name, html)
-        self.assertNotIn(self.article1.headline, html)
-        self.assertNotIn(self.article2.headline, html)
-        self.assertNotIn(self.article1.link, html)
-        self.assertNotIn(self.article2.link, html)
+    # assert that details of non-matching article are not found
+    assert article_instance_2.headline not in html
+    assert article_instance_2.link not in html
+    assert article_instance_2.body not in html
+
+
+@pytest.mark.django_db
+def test_search_result_not_found(
+    client,
+    source_instance,
+    source_instance_2,
+    article_instance,
+    article_instance_2,
+):
+    query_params = {"q": "test"}
+    response = client.get(reverse("search"), query_params)
+    html = response.content.decode("utf-8")
+
+    assert response.status_code == 200
+
+    # assert that details of non-matching source are not found
+    assert source_instance.name not in html
+    assert source_instance.link not in html
+
+    # assert that details of non-matching article are not found
+    assert article_instance.headline not in html
+    assert article_instance.link not in html
+    assert article_instance.body not in html
+
+
+@pytest.mark.django_db
+def test_search_result_substring(
+    client,
+    source_instance,
+    article_instance,
+    article_values,
+):
+    query_params = {"q": article_values["headline"][2:7]}
+    response = client.get(reverse("search"), query_params)
+    html = response.content.decode("utf-8")
+
+    assert response.status_code == 200
+
+    # assert that details of non-matching source are not found
+    assert source_instance.name not in html
+    assert source_instance.link not in html
+
+    # assert that details of non-matching article are not found
+    assert article_instance.headline not in html
+    assert article_instance.link not in html
+    assert article_instance.body not in html
