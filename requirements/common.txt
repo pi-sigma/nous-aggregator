@@ -12,7 +12,7 @@ cssselect==1.1.0
 dill==0.3.4
 distlib==0.3.4
 dj-database-url==1.0.0
-Django==4.0.7
+Django==4.1.10
 django-apscheduler==0.6.2
 django-on-heroku==1.1.2
 django-stubs==1.11.0
