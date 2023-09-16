@@ -1,12 +1,3 @@
-"""
-Production settings for nous_aggregator project.
-
-Identical to stage settings, except:
-    - values for environment variables are pulled
-      from Heroku via a Django plugin.
-    - sentry config is specific to production
-"""
-
 import django_on_heroku
 
 from .staging import *

@@ -1,52 +1,43 @@
 """
-Stage settings for nous_aggregator project.
-
-The settings are meant for running the app inside a Docker container.
-They emulate the production environment with the use of environment variables.
-
-Values for the env variables must be stored in a file .env-staging (see env-sample for
-instructions). They are loaded via dotenv in the __init__.py file.
+The settings emulate the production environment
 
 Defaults are chosen with security in mind: DEBUG is False by default, SECRET_KEY
 has an empty default in order to make the app crash if it's not set and DEBUG is off etc.
 """
 
-import os
 import socket
 
-from dotenv import load_dotenv
+from decouple import config
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
 from .basic import *
 
 
-load_dotenv(".env")
+SECRET_KEY = config("SECRET_KEY", default="")
 
-SECRET_KEY = os.getenv("SECRET_KEY", default="")
+DEBUG = config("DEBUG", default=False, cast=bool)
 
-DEBUG = os.getenv("DEBUG", default="False") == "True"
+ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="").split(',')
 
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", default="").split(',')
+CSRF_TRUSTED_ORIGINS = config("CSRF_TRUSTED_ORIGINS", default="").split(',')
 
-CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS", default="").split(',')
+SESSION_COOKIE_SECURE = config("SESSION_COOKIE_SECURE", default=True, cast=bool)
 
-SESSION_COOKIE_SECURE = os.getenv("SESSION_COOKIE_SECURE", default="True") == "True"
+CSRF_COOKIE_SECURE = config("CSRF_COOKIE_SECURE", default=True, cast=bool)
 
-CSRF_COOKIE_SECURE = os.getenv("CSRF_COOKIE_SECURE", default="True") == "True"
-
-SECURE_SSL_REDIRECT = os.getenv("SECURE_SSL_REDIRECT", default="True") == "True"
+SECURE_SSL_REDIRECT = config("SECURE_SSL_REDIRECT", default=True, cast=bool)
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 DATABASES = {
     "default": {
-        "ENGINE": os.getenv("DATABASE_ENGINE", default="django.db.backends.postgresql"),
-        "NAME": os.getenv("DATABASE_NAME", default="postgres"),
-        "USER": os.getenv("DATABASE_USER", default="postgres"),
-        "PASSWORD": os.getenv("DATABASE_PASSWORD", default="postgres"),
-        "HOST": os.getenv("DATABASE_HOST", default="postgres"),
-        "PORT": int(os.getenv("DATABASE_PORT", default=5432)),
+        "ENGINE": config("DATABASE_ENGINE", default="django.db.backends.postgresql"),
+        "NAME": config("DATABASE_NAME", default="postgres"),
+        "USER": config("DATABASE_USER", default="postgres"),
+        "PASSWORD": config("DATABASE_PASSWORD", default="postgres"),
+        "HOST": config("DATABASE_HOST", default="postgres"),
+        "PORT": config("DATABASE_PORT", default=5432, cast=int),
     },
 }
 
