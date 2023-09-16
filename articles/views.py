@@ -3,8 +3,7 @@ import re
 from django.shortcuts import render
 from django.views.generic import ListView
 
-from .models import Article
-from .models import Source
+from .models import Article, Source
 
 
 def index(request):
@@ -17,6 +16,7 @@ def index(request):
 
 class SearchResultsView(ListView):
     """Display sources + articles matching query."""
+
     model = Article
     fields = ["headline", "link", "body"]
     template_name = "articles/search_results.html"
@@ -31,9 +31,9 @@ class SearchResultsView(ListView):
         context = super().get_context_data(**kwargs)
         context.update(
             {
-                "sources": Source.objects.only(
-                    "name", "link", "publication_type").filter(
-                        articles__headline__iregex=regex).distinct(),
+                "sources": Source.objects.only("name", "link", "publication_type")
+                .filter(articles__headline__iregex=regex)
+                .distinct(),
                 "query": query,
             },
         )

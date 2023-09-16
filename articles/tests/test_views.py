@@ -1,8 +1,6 @@
-from pyquery import PyQuery as pq
 import pytest
-
 from django.urls import reverse
-
+from pyquery import PyQuery as pq
 
 TIMESPAN = 7  # no. of days
 
@@ -11,11 +9,7 @@ TIMESPAN = 7  # no. of days
 # Test IndexView
 #
 @pytest.mark.django_db
-def test_index_view(
-    client,
-    source_instance,
-    article_instance
-):
+def test_index_view(client, source_instance, article_instance):
     response = client.get(reverse("index"))
     html = response.content.decode("utf-8")
     doc = pq(html)

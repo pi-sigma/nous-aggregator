@@ -18,7 +18,11 @@ def test_source_to_dict(source_values):
     sitemap = source.to_dict()
 
     for attr_name in [
-            "body_selectors", "headline_selectors", "javascript", "language", "paths"
+        "body_selectors",
+        "headline_selectors",
+        "javascript",
+        "language",
+        "paths",
     ]:
         assert getattr(source, attr_name) == sitemap.get(attr_name)
 
@@ -45,6 +49,4 @@ def test_create_article(article_values_m):
 def test_article_representation(article_values_m):
     article = Article(**article_values_m)
 
-    assert str(article) == (
-        f"{article.source}: {article.headline}"
-    )
+    assert str(article) == (f"{article.source}: {article.headline}")

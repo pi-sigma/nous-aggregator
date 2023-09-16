@@ -1,8 +1,8 @@
 import json
 
 from ..constants import Language
-from ..scraper.parser import parse
 from ..models import Source
+from ..scraper.parser import parse
 
 
 def test_parse(source_values):
