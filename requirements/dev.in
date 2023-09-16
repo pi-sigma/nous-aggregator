@@ -1,5 +1,9 @@
 -c ci.txt
 
+# Code formatting
+flake8
+bandit
+
 # Debug tooling
 django-debug-toolbar
 django-extensions

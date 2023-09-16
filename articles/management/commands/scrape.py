@@ -16,12 +16,9 @@ from django.core.management.base import BaseCommand
 from django.db import IntegrityError
 from django.utils.timezone import make_aware
 from django_apscheduler.jobstores import DjangoJobStore
-from django_apscheduler.models import DjangoJob
-from django_apscheduler.models import DjangoJobExecution
+from django_apscheduler.models import DjangoJob, DjangoJobExecution
 
-from articles.models import Article
-from articles.models import Language
-from articles.models import Source
+from articles.models import Article, Language, Source
 from articles.scraper.spider import Spider
 
 logger = logging.getLogger(__name__)
@@ -48,7 +45,8 @@ def scrape(sitemap: dict):
         except IntegrityError as e:
             logger.info(
                 "Article (%s) already exists in database (%s)",
-                article_data["headline"], e
+                article_data["headline"],
+                e,
             )
 
 
@@ -59,6 +57,7 @@ def delete_old_job_executions(max_age=604_800):
 
 class Command(BaseCommand):
     """Create jobs."""
+
     def handle(self, *args, **options):
         scheduler = BlockingScheduler(
             timezone=settings.TIME_ZONE,

@@ -15,7 +15,7 @@ def find_headline(soup: BeautifulSoup, sitemap: dict, url: str) -> Optional[str]
     try:
         headline = soup.find(
             sitemap["headline_selectors"]["tag"],
-            attrs=sitemap["headline_selectors"]["attrs"]
+            attrs=sitemap["headline_selectors"]["attrs"],
         )
     except KeyError as e:
         logger.error("KeyError (%s) for headline of %s", e, url)
@@ -33,8 +33,9 @@ def find_body(soup: BeautifulSoup, sitemap: dict, url: str) -> Optional[str]:
         return None
 
     try:
-        body = soup.find(sitemap["body_selectors"]["tag"],
-                         attrs=sitemap["body_selectors"]["attrs"])
+        body = soup.find(
+            sitemap["body_selectors"]["tag"], attrs=sitemap["body_selectors"]["attrs"]
+        )
     except KeyError as e:
         logger.error("KeyError (%s) for body of %s", e, url)
         body = None  # Continue job, set `body` to avoid UnboundLocalError

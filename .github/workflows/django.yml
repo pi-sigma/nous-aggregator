@@ -2,11 +2,48 @@ name: Django CI
 
 on:
   push:
-    branches: [ "main", "dev" ]
+    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
 jobs:
+  #
+  # Import sorting
+  #
+  isort:
+    name: Check import sorting
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up backend environment
+        uses: isort/isort-action@v1.1.0
+        with:
+          requirements-files: requirements/ci.txt
+          sort-paths: 'articles'
+          configuration: '--check-only --diff'
+
+  #
+  # Code formatting
+  #
+  black:
+    name: Check code formatting with black
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: |
+          pip install -r requirements/ci.txt
+      - name: Run black
+        run: black --check --diff articles
+
+  #
+  # Tests
+  #
   tests:
     name: Run the Django test suite
     runs-on: ubuntu-latest
@@ -45,3 +82,38 @@ jobs:
         env:
           DJANGO_ENV: "CI"
         run: pytest articles/tests/
+
+  #
+  # Migrations
+  #
+  migrations:
+    name: Check for model changes not present in the migrations
+    runs-on: ubuntu-latest
+
+    services:
+      db:
+        image: postgres
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: 
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+          --name postgres
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          pip install -r requirements/ci.txt
+      - name: Run manage.py makemigrations --check --dry-run
+        run: |
+          python manage.py makemigrations --check --dry-run
+        env:
+          DJANGO_ENV: "CI"

@@ -10,8 +10,7 @@ from requests_html import AsyncHTMLSession  # type: ignore
 from requests_html import HTMLResponse  # type: ignore
 from websockets.exceptions import ConnectionClosedError  # type: ignore
 
-from . import headers
-from . import parser
+from . import headers, parser
 
 logger = logging.getLogger(__name__)
 
@@ -36,6 +35,7 @@ class Spider:
             scheduler which supplies the argument `sitemap`; creates a spider
             object for `sitemap` and runs the event loop.
     """
+
     headers = headers.headers
     articles: set[str] = set()
 
@@ -50,12 +50,13 @@ class Spider:
         self.links: set[str] = set()
 
     @staticmethod
-    async def connect(asession: AsyncHTMLSession,
-                      url: str) -> Optional[HTMLResponse]:
+    async def connect(asession: AsyncHTMLSession, url: str) -> Optional[HTMLResponse]:
         """GET request wrapper."""
         try:
             response = await asession.get(
-                url, timeout=20, headers=random.choice(Spider.headers),
+                url,
+                timeout=20,
+                headers=random.choice(Spider.headers),
             )
         except requests.exceptions.RequestException as e:
             logger.error("Could not fetch %s (%s)", url, e)

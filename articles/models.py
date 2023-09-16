@@ -1,11 +1,10 @@
 import regex
-
+from django.core.validators import URLValidator
 from django.db import models
 from django.db.models.functions import Lower
-from django.core.validators import URLValidator
 from django.utils.translation import gettext_lazy as _
 
-from .constants import PublicationType, Language
+from .constants import Language, PublicationType
 
 
 class Article(models.Model):
@@ -48,9 +47,7 @@ class Article(models.Model):
         help_text=_("The language of the article"),
     )
     link = models.URLField(
-        _("link"),
-        unique=True,
-        help_text=_("The link to the article")
+        _("link"), unique=True, help_text=_("The link to the article")
     )
     body = models.TextField(
         _("body"),
@@ -131,7 +128,7 @@ class Source(models.Model):
         _("link"),
         unique=True,
         validators=[URLValidator],
-        help_text=_("The link to the source")
+        help_text=_("The link to the source"),
     )
     #
     # info related to scraping
@@ -156,14 +153,14 @@ class Source(models.Model):
         help_text=_(
             "Whether the parsing of articles by this source requires rendering "
             "of JavaScript"
-        )
+        ),
     )
     headline_selectors = models.JSONField(
         _("headline selectors"),
         help_text=_(
             "Information about the structure of the target page needed to extract "
             "the headline of articles published by this source"
-        )
+        ),
     )
     body_selectors = models.JSONField(
         _("body selectors"),
@@ -172,24 +169,25 @@ class Source(models.Model):
         help_text=_(
             "Information about the structure of the target page needed to extract "
             "the body of articles published by this source"
-        )
+        ),
     )
 
     class Meta:
-        ordering = [Lower("name"), ]
+        ordering = [
+            Lower("name"),
+        ]
 
     def __str__(self):
         return f"{self.name}"
 
     def to_dict(self):
-        sitemap = \
-            {
-                "base_url": self.link,
-                "paths": self.paths,
-                "language": self.language,
-                "javascript": self.javascript,
-                "filter": regex.compile(self.regex),
-                "headline_selectors": self.headline_selectors,
-                "body_selectors": self.body_selectors,
-            }
+        sitemap = {
+            "base_url": self.link,
+            "paths": self.paths,
+            "language": self.language,
+            "javascript": self.javascript,
+            "filter": regex.compile(self.regex),
+            "headline_selectors": self.headline_selectors,
+            "body_selectors": self.body_selectors,
+        }
         return sitemap
