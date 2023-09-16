@@ -2,11 +2,39 @@ name: Django CI
 
 on:
   push:
-    branches: [ "main", "dev" ]
+    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
 jobs:
+  isort:
+    name: Check import sorting
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up backend environment
+        uses: isort/isort-action@v1.1.0
+        with:
+          requirements-files: requirements/ci.txt
+          sort-paths: 'articles'
+          configuration: '--check-only --diff'
+
+  black:
+    name: Check code formatting with black
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: |
+          pip install -r requirements/ci.txt
+      - name: Run black
+        run: black --check --diff articles
+
   tests:
     name: Run the Django test suite
     runs-on: ubuntu-latest
