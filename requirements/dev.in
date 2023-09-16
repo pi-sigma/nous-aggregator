@@ -1,0 +1,10 @@
+-c ci.txt
+
+# Debug tooling
+django-debug-toolbar
+django-extensions
+
+# Typing
+django-stubs
+mypy
+pytype

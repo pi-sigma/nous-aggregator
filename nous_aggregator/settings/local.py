@@ -1,11 +1,4 @@
-"""
-Development settings for nous_aggregator project.
-
-With these settings, the development server and pytest
-can be run without Docker.
-"""
-
-from .basic import *
+from .base import *
 
 
 SECRET_KEY = "hush-hush"
@@ -18,13 +11,11 @@ DATABASES = {
         'NAME': 'sqlite3.db',
     }
 }
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "postgres",
-        "USER": "postgres",
-        "PASSWORD": "postgres",
-        "HOST": "localhost",
-        "PORT": 5432,
-    },
-}
+
+INSTALLED_APPS += [
+    "debug_toolbar",
+]
+
+MIDDLEWARE += [
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
+]

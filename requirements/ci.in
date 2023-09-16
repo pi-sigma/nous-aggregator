@@ -1,0 +1,12 @@
+-c base.txt
+
+# Code formatting
+black
+isort
+flake8
+bandit
+
+# Testing
+pyquery
+pytest
+pytest-django

@@ -1,6 +1,7 @@
-"""CI settings for nous_aggregator project"""
+from .base import *
 
-from .local import *
+
+SECRET_KEY = "hush-hush"
 
 DATABASES = {
     "default": {

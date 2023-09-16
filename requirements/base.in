@@ -1,0 +1,16 @@
+# Core Python
+psycopg2
+websockets
+
+# Django
+django
+django-apscheduler
+django-on-heroku
+
+# Third-party
+beautifulsoup4
+langdetect
+python-decouple
+pyppeteer
+regex
+requests
