@@ -9,13 +9,14 @@ from bs4 import BeautifulSoup  # type: ignore
 logger = logging.getLogger(__name__)
 
 
-def find_headline(soup: BeautifulSoup,
-                  sitemap: dict,
-                  url: str) -> Optional[str]:
-    """Use `sitemap` to extract headline from article at `url`."""
+def find_headline(soup: BeautifulSoup, sitemap: dict, url: str) -> Optional[str]:
+    """Use `sitemap` to extract headline from article at `url`"""
+
     try:
-        headline = soup.find(sitemap["headline"]["tag"],
-                             attrs=sitemap["headline"]["attrs"])
+        headline = soup.find(
+            sitemap["headline_selectors"]["tag"],
+            attrs=sitemap["headline_selectors"]["attrs"]
+        )
     except KeyError as e:
         logger.error("KeyError (%s) for headline of %s", e, url)
         raise KeyError from e  # Abort job after logging error
@@ -25,15 +26,15 @@ def find_headline(soup: BeautifulSoup,
     return headline_text.strip()
 
 
-def find_body(soup: BeautifulSoup,
-              sitemap: dict,
-              url: str) -> Optional[str]:
-    """Use `parser` & `sitemap` to extract body from article at `url`."""
-    if sitemap["body"] is None:
+def find_body(soup: BeautifulSoup, sitemap: dict, url: str) -> Optional[str]:
+    """Use `parser` & `sitemap` to extract body from article at `url`"""
+
+    if sitemap["body_selectors"] is None:
         return None
+
     try:
-        body = soup.find(sitemap["body"]["tag"],
-                         attrs=sitemap["body"]["attrs"])
+        body = soup.find(sitemap["body_selectors"]["tag"],
+                         attrs=sitemap["body_selectors"]["attrs"])
     except KeyError as e:
         logger.error("KeyError (%s) for body of %s", e, url)
         body = None  # Continue job, set `body` to avoid UnboundLocalError
@@ -46,8 +47,10 @@ def find_body(soup: BeautifulSoup,
 
 def find_language(soup: BeautifulSoup, url: str) -> Optional[str]:
     """Detect the language of the page at `url`."""
+
     if (body := soup.body) is None or (text := body.get_text()) is None:
         return None
+
     language = langdetect.detect(text)
     if language is None:
         logger.warning("Missing language for %s", url)
@@ -55,10 +58,13 @@ def find_language(soup: BeautifulSoup, url: str) -> Optional[str]:
 
 
 def parse(html: str, sitemap: dict, url: str) -> Optional[str]:
-    """Parse the `html` at `url` with lxml, use html.parser as a fallback,
-    return data as JSON. If html.parser fails to return a headline, return None
+    """
+    Parse the `html` at `url` with lxml, use html.parser as a fallback,
+    return data as JSON. If html.parser fails to return a headline, return `None`
     (every article must have a headline); if the language does not match the one
-    specified in `sitemap`, return None."""
+    specified in `sitemap`, return `None`.
+    """
+
     # try first parser
     parser = "lxml"
     soup = BeautifulSoup(html, parser)

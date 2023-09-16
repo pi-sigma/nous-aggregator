@@ -13,6 +13,12 @@ SECRET_KEY = "hush-hush"
 DEBUG = True
 
 DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'sqlite3.db',
+    }
+}
+DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": "postgres",

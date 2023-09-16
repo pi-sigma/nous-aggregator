@@ -1,49 +1,23 @@
 import json
 
-from django.test import TestCase
-from bs4 import BeautifulSoup
-
-from ..scraper.parser import find_headline, find_body, find_language, parse
-from ..models import Source, PublicationType, Language
+from ..constants import Language
+from ..scraper.parser import parse
+from ..models import Source
 
 
-class TestParsers(TestCase):
-    def setUp(self):
-        self.html = "<html lang='en'><h1>Lorem ipsum</h1><body>...</body><h2>Hello there!</h2></html>"
-        self.html_2 = "<html lang='en'><h1>  Lorem ipsum  </h1><body>...</body><h2>Hello there!</h2></html>"
-        self.soup = BeautifulSoup(self.html, features="lxml")
-        self.language = Language.objects.create(name="en")
-        self.pubtype = PublicationType.objects.create(name="newspaper/journal")
-        self.source = Source.objects.create(
-            name="The Intercept",
-            link="https://theintercept.com/",
-            publication_type=self.pubtype,
-            language=self.language,
-            paths=["world/"],
-            javascript=False,
-            regex="[0-9]{4}/[0-9]{2}/[0-9]{2}",
-            headline={"tag": "h1", "attrs": {}},
-            body={"tag": "h2", "attrs": {}},
-        )
-        self.sitemap = self.source.to_dict()
-        self.url = "https://theintercept.com"
+def test_parse(source_values):
+    html = (
+        "<html lang='en'><h1>Headline of the article</h1><body>..."
+        "</body><h2>Some text...</h2></html>"
+    )
+    source = Source(**source_values)
+    sitemap = source.to_dict()
+    url = "https://www.hocusbogus.com/"
 
-    def test_find_headline(self):
-        headline = find_headline(self.soup, self.sitemap, self.url)
-        self.assertEqual(headline, "Lorem ipsum")
+    json_data = json.loads(parse(html, sitemap, url))
 
-    def test_find_body(self):
-        body = find_body(self.soup, self.sitemap, self.url)
-        self.assertEqual(body, "Hello there!")
-
-    def test_find_language(self):
-        language = find_language(self.soup, self.url)
-        self.assertEqual(language, "en")
-
-    def test_parse(self):
-        json_data = json.loads(parse(self.html, self.sitemap, self.url))
-        self.assertEqual(json_data["headline"], "Lorem ipsum")
-        self.assertEqual(json_data["body"], "Hello there!")
-        self.assertEqual(json_data["language"], "en")
-        self.assertEqual(json_data["link"], self.url)
-        self.assertEqual(json_data["source_link"], self.source.link)
+    assert json_data["headline"] == "Headline of the article"
+    assert json_data["body"] == "Some text..."
+    assert json_data["language"] == Language.en
+    assert json_data["link"] == url
+    assert json_data["source_link"] == source.link

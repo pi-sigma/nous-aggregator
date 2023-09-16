@@ -1,101 +1,182 @@
-import regex  # type: ignore
+import regex
+
 from django.db import models
 from django.db.models.functions import Lower
 from django.core.validators import URLValidator
+from django.utils.translation import gettext_lazy as _
+
+from .constants import PublicationType, Language
 
 
 class Article(models.Model):
     """
-    Represents metadata about articles from newspapers, journals, etc.
+    Metadata about articles from newspapers, journals, etc.
 
-    Attributes:
-        headline (str): the headline of the article
-        source (Source): the source of the article
-        body (str): either the actual body of the article,
-            or a short desriptive paragraph
-        language (Language): the language of the article
-        pubdate (datetime): the date at which the article was added to the
+    Fields:
+        headline (models.TextField): headline of the article
+        slug (models.SlugField): slug of the article (generated from headline)
+        created_at (models.DateTimeField): date the article was added to the
             database. Mostly corresponds to actual publication date, though
-            it can vary. Actual dates are not used because their format
+            this can vary. Actual dates are not used because their format
             varies a lot, hence they are difficult to parse.
+        language (models.CharField): the language of the article
+        link (models.URLField): link to the article
+        body (models.TextField): either the actual body of the article,
+            or a short desriptive paragraph
+
+    Relations:
+        source (ForeignKey): the source of the article
 
     Methods:
         __str__: string representation for the admin area
     """
-    headline = models.TextField()
+
+    headline = models.TextField(
+        _("headline"),
+        help_text=_("The headline of the article"),
+    )
+    slug = models.SlugField(
+        _("Slug"),
+        help_text=_("The slug of the article for SEO-friendly urls"),
+    )
+    created_at = models.DateTimeField()
+    language = models.CharField(
+        _("language"),
+        max_length=4,
+        choices=Language.choices,
+        blank=True,
+        help_text=_("The language of the article"),
+    )
+    link = models.URLField(
+        _("link"),
+        unique=True,
+        help_text=_("The link to the article")
+    )
+    body = models.TextField(
+        _("body"),
+        null=True,
+        blank=True,
+        help_text=_("The body of the article"),
+    )
     source = models.ForeignKey(
-        "Source", on_delete=models.CASCADE, related_name="articles"
+        "Source",
+        on_delete=models.CASCADE,
+        related_name="articles",
+        help_text=_("The source where the article is published"),
     )
-    body = models.TextField(null=True, blank=True)
-    language = models.ForeignKey(
-        "Language", null=True, blank=True, on_delete=models.SET_NULL
-    )
-    link = models.TextField(unique=True, validators=[URLValidator()])
-    pubdate = models.DateTimeField()
+
+    class Meta:
+        ordering = ("-created_at",)
+        indexes = [models.Index(fields=["headline", "link"])]
 
     def __str__(self):
         return f"{self.source}: {self.headline}"
 
-    class Meta:
-        ordering = ("-pubdate",)
-        indexes = [models.Index(fields=["headline", "link"])]
-
-
-class Language(models.Model):
-    """Represents metadata about the language of an article"""
-    name = models.CharField(max_length=8, unique=True)
-
-    def __str__(self):
-        return f"{self.name}"
-
-
-class PublicationType(models.Model):
-    """Represents metadata about the type of publication of an article"""
-    name = models.CharField(max_length=32, unique=True)
-
-    def __str__(self):
-        return f"{self.name}"
-
 
 class Source(models.Model):
     """
-    Represents metadata about the source of an article
+    Metadata about the source of articles
 
-    Attributes:
-        name (str): the name of the source
-        link (str): the base url of the source ('https://www.example.com/')
-        publication_type (PublicationType): the type of publication of the
-            source (newspaper, journal, blog, etc,)
-        language (Language): the language of the source (used by the scraper
-            to compare against the language of a webpage)
-        paths (list): a list of paths, each of which is appended to the base url to
-            tell the scraper where to look for links ('https://example.com/path1/',
-            'https://example.com/path2/')
-        javascript (bool): True if JavaScript must be rendered before data can be
-            extracted from the webpage, False otherwise
-        regex (str): a regular expression for filtering links; the scraper will only
-            follow links that pass the test
-        headline (dict): contains information about the HTML/CSS needed to extract
-            the headline of an article
-        body (dict): contains information about the HTML/CSS needed to extract
-            the body of an article (or a descriptive paragraph)
+    Fields:
+        name (models.CharField): name of the source
+        slug (models.SlugField): slug of the source
+        publication_type (models.CharField): the type of publication of the
+            source (newspaper, journal, blog...)
+        language (models.CharField): the language of the source
+        link (models.URLField): the base url of the source
+        paths (models.JSONField): a list of paths, each of which is appended to
+            the base url to tell the scraper where to look for hyper-links
+            ('https://example.com/path1/')
+        regex (models.CharField): a regular expression for filtering links
+        javascript (models.BooleanField): True if JavaScript must be rendered before
+            data can be extracted from the webpage, False otherwise
+        headline_selectors (models.JSONField): information about the CSS selectors
+            needed to extract the headline of an article
+        body_selectors (models.JSONField): information about the CSS selectors
+            needed to extract the body of an article (or a descriptive paragraph)
 
     Methods:
         __str__: string representation of the model for the admin area
         to_dict: creates a dictionary with the information required by the
             scraper
     """
-    name = models.TextField(unique=True)
-    link = models.TextField(unique=True, validators=[URLValidator()])
-    publication_type = models.ForeignKey(
-        "PublicationType", null=True, blank=True, on_delete=models.SET_NULL
+
+    name = models.CharField(
+        _("name"),
+        max_length=128,
+        unique=True,
+        blank=False,
+        help_text=_("The name of the source"),
     )
-    language = models.ForeignKey("Language", null=True, on_delete=models.SET_NULL)
-    paths = models.JSONField()
-    javascript = models.BooleanField(default=False)
-    regex = models.CharField(max_length=512)
-    headline = models.JSONField()
-    body = models.JSONField(null=True, blank=True)
+    slug = models.SlugField(
+        _("Slug"),
+        blank=True,
+        help_text=_("The slug of the source for SEO-friendly urls"),
+    )
+    publication_type = models.CharField(
+        _("publication type"),
+        max_length=24,
+        choices=PublicationType.choices,
+        blank=False,
+        help_text=_("The type of publication of the source"),
+    )
+    language = models.CharField(
+        _("language"),
+        max_length=4,
+        choices=Language.choices,
+        blank=True,
+        help_text=_("The language of the article"),
+    )
+    link = models.URLField(
+        _("link"),
+        unique=True,
+        validators=[URLValidator],
+        help_text=_("The link to the source")
+    )
+    #
+    # info related to scraping
+    #
+    paths = models.JSONField(
+        _("paths"),
+        help_text=_(
+            "A list of resource paths where the scraper will look for articles"
+        ),
+    )
+    regex = models.CharField(
+        _("regex"),
+        max_length=512,
+        blank=True,
+        help_text=(
+            "Regular expression for filtering hyper-links found at the resource paths"
+        ),
+    )
+    javascript = models.BooleanField(
+        _("render javascript"),
+        default=False,
+        help_text=_(
+            "Whether the parsing of articles by this source requires rendering "
+            "of JavaScript"
+        )
+    )
+    headline_selectors = models.JSONField(
+        _("headline selectors"),
+        help_text=_(
+            "Information about the structure of the target page needed to extract "
+            "the headline of articles published by this source"
+        )
+    )
+    body_selectors = models.JSONField(
+        _("body selectors"),
+        null=True,
+        blank=True,
+        help_text=_(
+            "Information about the structure of the target page needed to extract "
+            "the body of articles published by this source"
+        )
+    )
+
+    class Meta:
+        ordering = [Lower("name"), ]
 
     def __str__(self):
         return f"{self.name}"
@@ -105,13 +186,10 @@ class Source(models.Model):
             {
                 "base_url": self.link,
                 "paths": self.paths,
-                "language": self.language.name,
+                "language": self.language,
                 "javascript": self.javascript,
                 "filter": regex.compile(self.regex),
-                "headline": self.headline,
-                "body": self.body,
+                "headline_selectors": self.headline_selectors,
+                "body_selectors": self.body_selectors,
             }
         return sitemap
-
-    class Meta:
-        ordering = [Lower("name"), ]
