@@ -11,10 +11,11 @@ TIMESPAN = 7  # no. of days
 @pytest.mark.django_db
 def test_index_view(client, source_instance, article_instance):
     response = client.get(reverse("index"))
-    html = response.content.decode("utf-8")
-    doc = pq(html)
 
     assert response.status_code == 200
+
+    html = response.content.decode("utf-8")
+    doc = pq(html)
 
     # assert that details of source are present in response content
     source_name = doc.find(".source-name").text()
@@ -35,7 +36,6 @@ def test_index_view(client, source_instance, article_instance):
     assert article_link.is_("a")
     assert article_link_href == article_instance.link
     assert article_instance.headline in article_link_title
-    assert article_instance.body in article_link_title
 
 
 #
@@ -76,7 +76,7 @@ def test_search_results_view(
     assert article_link.is_("a")
     assert article_link_href == article_instance.link
     assert article_instance.headline in article_link_title
-    assert article_instance.body in article_link_title
+    assert article_instance.summary in article_link_title
 
     # assert that details of non-matching source are not found
     assert source_instance_2.name not in html
@@ -85,7 +85,7 @@ def test_search_results_view(
     # assert that details of non-matching article are not found
     assert article_instance_2.headline not in html
     assert article_instance_2.link not in html
-    assert article_instance_2.body not in html
+    assert article_instance_2.summary not in html
 
 
 @pytest.mark.django_db
@@ -109,7 +109,7 @@ def test_search_result_not_found(
     # assert that details of non-matching article are not found
     assert article_instance.headline not in html
     assert article_instance.link not in html
-    assert article_instance.body not in html
+    assert article_instance.summary not in html
 
 
 @pytest.mark.django_db
@@ -132,4 +132,4 @@ def test_search_result_substring(
     # assert that details of non-matching article are not found
     assert article_instance.headline not in html
     assert article_instance.link not in html
-    assert article_instance.body not in html
+    assert article_instance.summary not in html

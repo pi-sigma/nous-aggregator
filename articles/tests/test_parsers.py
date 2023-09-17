@@ -17,7 +17,7 @@ def test_parse(source_values):
     json_data = json.loads(parse(html, sitemap, url))
 
     assert json_data["headline"] == "Headline of the article"
-    assert json_data["body"] == "Some text..."
+    assert json_data["summary"] == "Some text..."
     assert json_data["language"] == Language.en
     assert json_data["link"] == url
     assert json_data["source_link"] == source.link

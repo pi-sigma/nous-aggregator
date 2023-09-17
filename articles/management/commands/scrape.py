@@ -18,7 +18,7 @@ from django.utils.timezone import make_aware
 from django_apscheduler.jobstores import DjangoJobStore
 from django_apscheduler.models import DjangoJob, DjangoJobExecution
 
-from articles.models import Article, Language, Source
+from articles.models import Article, Source
 from articles.scraper.spider import Spider
 
 logger = logging.getLogger(__name__)
@@ -34,11 +34,12 @@ def scrape(sitemap: dict):
     for article_data in data:
         article = Article(
             headline=article_data["headline"],
+            slug=article_data["slug"],
             source=Source.objects.get(link=article_data["source_link"]),
-            body=article_data["body"],
-            language=Language.objects.get(name=article_data["language"]),
+            summary=article_data["summary"],
+            language=article_data["language"],
             link=article_data["link"],
-            pubdate=make_aware(datetime.now()),
+            created_at=make_aware(datetime.now()),
         )
         try:
             article.save()

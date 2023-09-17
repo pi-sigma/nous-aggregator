@@ -29,7 +29,7 @@ touch .env
 Open the file with the editor of your choice and set the environment variables.
 See [env-sample](https://github.com/pi-sigma/nous-aggregator/blob/main/env-sample) for instructions.
 
-Build the Docker image (this can take a while the first time around):
+Build the Docker image:
 ```sh
 docker-compose build
 ```
@@ -46,8 +46,6 @@ docker-compose run web python manage.py migrate
 
 Initialize the database:
 ```sh
-docker-compose run web python manage.py loaddata fixtures/languages.json
-docker-compose run web python manage.py loaddata fixtures/pub_types.json
 docker-compose run web python manage.py loaddata fixtures/sources.json
 ```
 
@@ -90,7 +88,7 @@ base_url: "https://www.example.com/"
 paths: ["path1/", "path2/"]
 regex: "/[0-9]{4}/[0-9]{2}/[0-9]{2}/"
 headline: {"tag": "h1", "attrs": {}},
-body: {"tag": "section", "attrs": {"class": "body-text"}},
+summary: {"tag": "section", "attrs": {"class": "body-text"}},
 ```
 This will tell the scraper to follow links on `https://www.example.com/path1/` and `https://www.example.com/path2/`, and to only extract data from pages whose link contains the specified pattern, ignoring everything else (thus it will scrape `https://www.example.com/2022/06/07/story.com` but not `https://www.example.com/policies.com`. Headlines should have an HTML tag `h1`, and the body should have an HTML tag `section` with a `class` attribute `body-text`.
 
@@ -109,16 +107,12 @@ python3.10 -m venv venv
 ```
 Install the requirements:
 ```sh
-python -m pip install -r requirements/common.txt
 python -m pip install -r requirements/dev.txt
 ```
 Run the tests:
 ```sh
 pytest articles/tests.py
 ```
-
-It is also possible to run the app without Docker using `python manage.py runserver` (for the web server) and `python manage.py scrape` (for the scraper). This can be useful for testing/debugging settings for the scraper in connection with a VPN, which is not trivial to set up with Docker. However, make sure you have a Postgres database listening on port `5433` or change the database configuration in `settings.py`. Also see the next point.
-
 
 ## Issues
 Sometimes it is necessary to render JavaScript on a webpage before any information can be extracted.
@@ -142,3 +136,5 @@ I've created a temporary workaround by disabling pyppeteer's signal handling.
 The patch is applied automatically during the build of the Docker image.
 When the containers are started, the program runs normally.
 If you want to run the scraper outside a Docker container, you will need to overwrite the launcher settings by hand (see the files in the [patches](https://github.com/pi-sigma/nous-aggregator/tree/main/patches) folder for hints on how to do this).
+
+For a proper fix, APSscheduler should be replaced with Celery for running jobs.

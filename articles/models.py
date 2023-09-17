@@ -43,17 +43,17 @@ class Article(models.Model):
         _("language"),
         max_length=4,
         choices=Language.choices,
-        blank=True,
+        blank=False,
         help_text=_("The language of the article"),
     )
     link = models.URLField(
         _("link"), unique=True, help_text=_("The link to the article")
     )
-    body = models.TextField(
-        _("body"),
+    summary = models.TextField(
+        _("summary"),
         null=True,
         blank=True,
-        help_text=_("The body of the article"),
+        help_text=_("A summary of the article"),
     )
     source = models.ForeignKey(
         "Source",
@@ -89,8 +89,8 @@ class Source(models.Model):
             data can be extracted from the webpage, False otherwise
         headline_selectors (models.JSONField): information about the CSS selectors
             needed to extract the headline of an article
-        body_selectors (models.JSONField): information about the CSS selectors
-            needed to extract the body of an article (or a descriptive paragraph)
+        summary_selectors (models.JSONField): information about the CSS selectors
+            needed to extract the summary of an article
 
     Methods:
         __str__: string representation of the model for the admin area
@@ -141,7 +141,7 @@ class Source(models.Model):
     )
     regex = models.CharField(
         _("regex"),
-        max_length=512,
+        max_length=255,
         blank=True,
         help_text=(
             "Regular expression for filtering hyper-links found at the resource paths"
@@ -162,13 +162,13 @@ class Source(models.Model):
             "the headline of articles published by this source"
         ),
     )
-    body_selectors = models.JSONField(
-        _("body selectors"),
+    summary_selectors = models.JSONField(
+        _("summary selectors"),
         null=True,
         blank=True,
         help_text=_(
             "Information about the structure of the target page needed to extract "
-            "the body of articles published by this source"
+            "the summary of articles published by this source"
         ),
     )
 
@@ -188,6 +188,6 @@ class Source(models.Model):
             "javascript": self.javascript,
             "filter": regex.compile(self.regex),
             "headline_selectors": self.headline_selectors,
-            "body_selectors": self.body_selectors,
+            "summary_selectors": self.summary_selectors,
         }
         return sitemap

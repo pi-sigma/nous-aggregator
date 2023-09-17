@@ -1,6 +1,8 @@
-import django_on_heroku
-
 from .staging import *
+
+import django_on_heroku
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
 
 
 sentry_sdk.init(

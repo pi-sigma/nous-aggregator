@@ -13,7 +13,7 @@ RUN apt-get update \
   && pip install psycopg2 \
   # pyppeteer deps (cf. https://stackoverflow.com/a/71935536)
   && xargs apt-get install -y --no-install-recommends < requirements/pyppeteer_deps.txt \
-  && pip install -r requirements/common.txt
+  && pip install -r requirements/base.txt
 
 COPY . /usr/src/app
 WORKDIR /usr/src/app

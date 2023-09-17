@@ -1,5 +1,3 @@
-"""Basic settings for nous_aggregator project."""
-
 import os
 from pathlib import Path
 
@@ -26,7 +24,6 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    # "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -41,6 +38,11 @@ ROOT_URLCONF = "nous_aggregator.urls"
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
+
+# Timeouts (connection timeout, read timeout) in seconds for requests
+# made with the requests library
+REQUESTS_TIMEOUT = (6, 18)
+REQUESTS_TIMEOUT_JS = (6, 60)
 
 TEMPLATES = [
     {

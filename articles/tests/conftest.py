@@ -21,7 +21,7 @@ def source_values():
         "javascript": False,
         "regex": "[0-9]{4}/[0-9]{2}/[0-9]{2}",
         "headline_selectors": {"tag": "h1", "attrs": {}},
-        "body_selectors": {"tag": "h2", "attrs": {}},
+        "summary_selectors": {"tag": "h2", "attrs": {}},
     }
 
 
@@ -42,7 +42,7 @@ def source_values_2():
         "javascript": False,
         "regex": "[0-9]{4}/[0-9]{2}/[0-9]{2}",
         "headline_selectors": {"tag": "h1", "attrs": {}},
-        "body_selectors": {"tag": "h2", "attrs": {}},
+        "summary_selectors": {"tag": "h2", "attrs": {}},
     }
 
 
@@ -56,7 +56,7 @@ def article_values(source_instance):
     return {
         "headline": "A cow jumps over the moon",
         "slug": "a-cow-jumps-over-the-moon",
-        "body": "Lorem dolor sit amet...",
+        "summary": "Lorem dolor sit amet...",
         "link": "https://www.hocusbogus.com/2022/05/08/foobar",
         "source": source_instance,
         "created_at": timezone.localtime(),
@@ -68,7 +68,7 @@ def article_values_m(source_values):
     return {
         "headline": "A cow jumps over the moon",
         "slug": "a-cow-jumps-over-the-moon",
-        "body": "Lorem dolor sit amet...",
+        "summary": "Lorem dolor sit amet...",
         "link": "https://www.hocusbogus.com/2022/05/08/foobar",
         "source": Source(**source_values),
         "created_at": timezone.localtime(),
@@ -85,7 +85,7 @@ def article_values_2(source_instance):
     return {
         "headline": "The moon is made of cheese",
         "slug": "the-moon-is-made-of-cheese",
-        "body": "Consectetur adipiscing elit, sed do eiusmod tempor incididunt...",
+        "summary": "Consectetur adipiscing elit, sed do eiusmod tempor incididunt...",
         "link": "https://www.nonsensical.org/2022/05/08/baz",
         "source": source_instance,
         "created_at": timezone.localtime(),

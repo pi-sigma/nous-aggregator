@@ -5,22 +5,20 @@ Defaults are chosen with security in mind: DEBUG is False by default, SECRET_KEY
 has an empty default in order to make the app crash if it's not set and DEBUG is off etc.
 """
 
+from .base import *
+
 import socket
 
-from decouple import config
-import sentry_sdk
-from sentry_sdk.integrations.django import DjangoIntegration
-
-from .basic import *
+from decouple import config, Csv
 
 
 SECRET_KEY = config("SECRET_KEY", default="")
 
 DEBUG = config("DEBUG", default=False, cast=bool)
 
-ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="").split(',')
+ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="", cast=Csv())
 
-CSRF_TRUSTED_ORIGINS = config("CSRF_TRUSTED_ORIGINS", default="").split(',')
+CSRF_TRUSTED_ORIGINS = config("CSRF_TRUSTED_ORIGINS", default="", cast=Csv())
 
 SESSION_COOKIE_SECURE = config("SESSION_COOKIE_SECURE", default=True, cast=bool)
 
@@ -36,7 +34,9 @@ DATABASES = {
         "NAME": config("DATABASE_NAME", default="postgres"),
         "USER": config("DATABASE_USER", default="postgres"),
         "PASSWORD": config("DATABASE_PASSWORD", default="postgres"),
-        "HOST": config("DATABASE_HOST", default="postgres"),
+        "HOST": config("DATABASE_HOST", default="localhost"),
+        # "HOST": "host.docker.internal",
+        # "HOST": "localhost",
         "PORT": config("DATABASE_PORT", default=5432, cast=int),
     },
 }
@@ -44,21 +44,3 @@ DATABASES = {
 # for django_debug_toolbar
 hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
 INTERNAL_IPS = [ip[: ip.rfind(".")] + ".1" for ip in ips] + ["127.0.0.1", "10.0.2.2"]
-
-sentry_sdk.init(
-    dsn="https://242fe72f1a234cecae5a3b1fad7bb4c0@o1410776.ingest.sentry.io/6748377",
-    integrations=[
-        DjangoIntegration(),
-    ],
-
-    # Set traces_sample_rate to 1.0 to capture 100%
-    # of transactions for performance monitoring.
-    # We recommend adjusting this value in production.
-    traces_sample_rate=1.0,
-
-    # If you wish to associate users to errors (assuming you are using
-    # django.contrib.auth) you may enable sending PII data.
-    send_default_pii=True,
-
-    environment="staging",
-)

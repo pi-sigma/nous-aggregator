@@ -1,8 +1,7 @@
 -c base.txt
 
-# Code formatting
-black
-isort
+# Code quality
+bandit
 
 # Testing
 pyquery

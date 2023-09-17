@@ -1,14 +1,13 @@
-"""Provides access the the Spider class"""
 import asyncio
 import logging
 import random
 from typing import Optional
 
-import pyppeteer  # type: ignore
+import pyppeteer
 import requests
-from requests_html import AsyncHTMLSession  # type: ignore
-from requests_html import HTMLResponse  # type: ignore
-from websockets.exceptions import ConnectionClosedError  # type: ignore
+from django.conf import settings
+from requests_html import AsyncHTMLSession, HTMLResponse
+from websockets.exceptions import ConnectionClosedError
 
 from . import headers, parser
 
@@ -40,9 +39,6 @@ class Spider:
     articles: set[str] = set()
 
     def __init__(self, sitemap: dict):
-        """A Spider object collects links on the pages in `starting_urls`,
-        scrapes the pages, and stores the data in the class attribute
-        `articles`."""
         self.sitemap = sitemap
         self.starting_urls = [
             self.sitemap["base_url"] + path for path in self.sitemap["paths"]
@@ -51,55 +47,67 @@ class Spider:
 
     @staticmethod
     async def connect(asession: AsyncHTMLSession, url: str) -> Optional[HTMLResponse]:
-        """GET request wrapper."""
+        """GET request wrapper"""
         try:
             response = await asession.get(
                 url,
-                timeout=20,
-                headers=random.choice(Spider.headers),
+                headers=random.choice(Spider.headers),  # nosec
+                timeout=settings.REQUESTS_TIMEOUT,
             )
         except requests.exceptions.RequestException as e:
             logger.error("Could not fetch %s (%s)", url, e)
             return None
-        else:
-            return response
+        return response
 
     async def get_links(self, asession: AsyncHTMLSession, url: str):
-        """Get all article links at `url` and filter them via regex."""
+        """
+        Get all article links at `url` and filter them
+        """
         response = await Spider.connect(asession, url)
-        if response:
-            if self.sitemap["javascript"]:
-                # try for 60s to render JavaScript on the page
-                try:
-                    await response.html.arender(timeout=60)
-                except pyppeteer.errors.TimeoutError as e:
-                    logger.error("Could not render JavaScript for %s (%s)", url, e)
-            for link in response.html.absolute_links:
-                if self.sitemap["filter"].search(link):
-                    self.links.add(link)
+        if not response:
+            return
 
-    async def scrape(self, asession: AsyncHTMLSession, url: str) -> None:
-        """Scrape the page at `url` and store data as JSON."""
+        if self.sitemap["javascript"]:
+            try:
+                await response.html.arender(timeout=settings.REQUESTS_TIMEOUT_JS)
+            except pyppeteer.errors.TimeoutError as e:
+                logger.error("Could not render JavaScript for %s (%s)", url, e)
+        for link in response.html.absolute_links:
+            if self.sitemap["filter"].search(link):
+                self.links.add(link)
+
+    async def scrape(self, asession: AsyncHTMLSession, url: str):
+        """
+        Scrape the page at `url` and store data
+        """
         response = await Spider.connect(asession, url)
-        if response:
-            html = response.text
-            article = parser.parse(html, self.sitemap, url)
-            if article:
-                Spider.articles.add(article)
+        if not response:
+            return
 
-    async def collect_links(self, asession: AsyncHTMLSession) -> None:
-        """Create & gather tasks for collection of links."""
+        html = response.text
+        article = parser.parse(html, self.sitemap, url)
+        if article:
+            Spider.articles.add(article)
+
+    async def collect_links(self, asession: AsyncHTMLSession):
+        """
+        Create & gather tasks for collection of links
+        """
         coros = [self.get_links(asession, url) for url in self.starting_urls]
         await asyncio.gather(*coros)
 
-    async def collect_metadata(self, asession: AsyncHTMLSession) -> None:
-        """Create & gather tasks for scraping."""
+    async def collect_metadata(self, asession: AsyncHTMLSession):
+        """
+        Create & gather tasks for scraping
+        """
         coros = [self.scrape(asession, link) for link in self.links]
         await asyncio.gather(*coros)
 
     @staticmethod
-    def crawl(sitemap: dict) -> None:
-        """Create spider instance and run the event loop."""
+    def crawl(sitemap: dict):
+        """
+        Create spider instance and run the event loop
+        """
         spider = Spider(sitemap)
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)

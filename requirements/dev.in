@@ -1,8 +1,10 @@
 -c ci.txt
 
-# Code formatting
-flake8
+# Code quality
 bandit
+black
+flake8
+isort
 
 # Debug tooling
 django-debug-toolbar
@@ -12,3 +14,4 @@ django-extensions
 django-stubs
 mypy
 pytype
+types-requests

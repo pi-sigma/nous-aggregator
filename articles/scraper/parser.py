@@ -5,12 +5,13 @@ from typing import Optional
 
 import langdetect  # type: ignore
 from bs4 import BeautifulSoup  # type: ignore
+from django.utils.text import slugify
 
 logger = logging.getLogger(__name__)
 
 
 def find_headline(soup: BeautifulSoup, sitemap: dict, url: str) -> Optional[str]:
-    """Use `sitemap` to extract headline from article at `url`"""
+    """Use `sitemap` to extract headline from article"""
 
     try:
         headline = soup.find(
@@ -22,28 +23,29 @@ def find_headline(soup: BeautifulSoup, sitemap: dict, url: str) -> Optional[str]
         raise KeyError from e  # Abort job after logging error
     if headline is None:
         return None
-    headline_text = headline.get_text()
-    return headline_text.strip()
+    headline_text = headline.get_text().strip()
+    return headline_text
 
 
-def find_body(soup: BeautifulSoup, sitemap: dict, url: str) -> Optional[str]:
-    """Use `parser` & `sitemap` to extract body from article at `url`"""
+def find_summary(soup: BeautifulSoup, sitemap: dict, url: str) -> Optional[str]:
+    """Use `parser` & `sitemap` to extract summary from article"""
 
-    if sitemap["body_selectors"] is None:
+    if sitemap["summary_selectors"] is None:
         return None
 
     try:
-        body = soup.find(
-            sitemap["body_selectors"]["tag"], attrs=sitemap["body_selectors"]["attrs"]
+        summary = soup.find(
+            sitemap["summary_selectors"]["tag"],
+            attrs=sitemap["summary_selectors"]["attrs"],
         )
     except KeyError as e:
-        logger.error("KeyError (%s) for body of %s", e, url)
-        body = None  # Continue job, set `body` to avoid UnboundLocalError
-    if body is None:
-        logger.warning("Missing body for %s", url)
+        logger.error("KeyError (%s) for summary of %s", e, url)
+        summary = None  # Continue job, set `summary` to avoid UnboundLocalError
+    if summary is None:
+        logger.warning("Missing summary for %s", url)
         return None
-    body_text = body.get_text()
-    return body_text.strip()
+    summary_text = summary.get_text().strip()
+    return summary_text
 
 
 def find_language(soup: BeautifulSoup, url: str) -> Optional[str]:
@@ -76,16 +78,22 @@ def parse(html: str, sitemap: dict, url: str) -> Optional[str]:
         soup = BeautifulSoup(html, parser)
         headline = find_headline(soup, sitemap, url)
     if headline is None:
-        logger.warning("Missing headline for %s", url)
+        logger.warning("No headline for %s", url)
         return None
     language = find_language(soup, url)
     if not language == sitemap["language"]:
-        logger.warning("Language of article + source do not match: %s", url)
+        logger.warning(
+            "Language of article (%s) + source (%s) do not match: %s",
+            language,
+            sitemap["language"],
+            url,
+        )
         return None
-    body = find_body(soup, sitemap, url)
+    summary = find_summary(soup, sitemap, url)
     article = {
         "headline": headline,
-        "body": body if body else "No description",
+        "slug": slugify(headline),
+        "summary": summary if summary else "No description",
         "language": language,
         "link": url,
         "source_link": sitemap["base_url"],

@@ -4,26 +4,25 @@ services:
   db:
     image: postgres
     volumes:
-      - db:/var/lib/postgresql/data/
+      - postgres_data:/var/lib/postgresql/data:rw
     environment:
       - POSTGRES_HOST_AUTH_METHOD=trust
-    ports:
-      - '5432:5432'
 
   web:
     image: nous_aggregator
     build:
       context: .
       dockerfile: Dockerfile.dev
-    environment:
-      DATABASE_HOST: "${DATABASE_HOST}"
-      DATABASE_PORT: "${DATABASE_PORT}"
     command: >
-      sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+      sh -c "python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
     volumes:
       - .:/usr/src/app
     ports:
       - "8000:8000"
+    restart: always
+    env_file:
+      - ./.env
     depends_on:
       - db
 
@@ -41,4 +40,4 @@ services:
       - db
 
 volumes:
-  db:
+  postgres_data:

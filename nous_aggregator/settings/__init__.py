@@ -7,7 +7,7 @@ On the production server, DJANGO_ENV should be left undefined
 
 from decouple import config
 
-DJANGO_ENV = config('DJANGO_ENV')
+DJANGO_ENV = config('DJANGO_ENV', default="")
 
 match DJANGO_ENV:
     case "CI":
@@ -16,5 +16,5 @@ match DJANGO_ENV:
         from .local import *
     case "STAGING":
         from .staging import *
-    case _:
+    case "":
         from .production import *

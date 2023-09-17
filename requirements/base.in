@@ -1,16 +1,16 @@
-# Core Python
+# Python
+beautifulsoup4
+langdetect
+regex
+requests
+requests-html
+python-decouple
 psycopg2
+pyppeteer
+sentry-sdk
 websockets
 
 # Django
 django
 django-apscheduler
 django-on-heroku
-
-# Third-party
-beautifulsoup4
-langdetect
-python-decouple
-pyppeteer
-regex
-requests

@@ -18,7 +18,7 @@ def test_source_to_dict(source_values):
     sitemap = source.to_dict()
 
     for attr_name in [
-        "body_selectors",
+        "summary_selectors",
         "headline_selectors",
         "javascript",
         "language",
