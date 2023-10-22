@@ -1,7 +1,7 @@
 # Nous Aggregator
 
-[![Python 3.10](https://img.shields.io/badge/python-3.10-blue)](https://www.python.org/downloads/release/python-3100/)
-[![Django 4.05](https://img.shields.io/badge/django-4.0-blue)](https://docs.djangoproject.com/en/4.0/)
+[![Python 3.11](https://img.shields.io/badge/python-3.11-blue)](https://www.python.org/downloads/release/python-3110/)
+[![Django 4.05](https://img.shields.io/badge/django-4.2-blue)](https://docs.djangoproject.com/en/4.2/)
 [![Django CI](https://github.com/pi-sigma/nous-aggregator/actions/workflows/django.yml/badge.svg)](https://github.com/pi-sigma/test/actions/workflows/django.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/pi-sigma/test/blob/main/LICENSE.md)
 
@@ -98,7 +98,7 @@ docker-compose run web python manage.py dumpdata articles.source --indent 2 > fi
 ```
 
 ## Development
-Make sure [Python 3.10](https://www.python.org/downloads/) is installed on your system.
+Make sure [Python 3.11](https://www.python.org/downloads/) is installed on your system.
 
 create a virtual environment in the root directory of the app and activate it:
 ```sh
@@ -113,28 +113,3 @@ Run the tests:
 ```sh
 pytest articles/tests.py
 ```
-
-## Issues
-Sometimes it is necessary to render JavaScript on a webpage before any information can be extracted.
-To achieve this, the scraper of this app makes use of the [requests-html](https://requests.readthedocs.io/projects/requests-html/en/latest/) library, which in turn uses [pyppeteer](https://github.com/miyakogi/pyppeteer) under the hood, a headless Chromium browser.
-
-Pyppeteer uses a `SIGTERM` signal to terminate the browser process, which is fine when run on its own, but creates a problem in the present context.
-The scraping jobs are scheduled to run in a separate thread created by [Apscheduler](https://apscheduler.readthedocs.io/en/3.x/) (potentially many threads, but the present setup uses only one).
-However, according to the [Python Documentation](https://docs.python.org/3/library/signal.html#signals-and-threads) on signals and threads:
-
-> Python signal handlers are always executed in the main Python thread of the main interpreter, even if the signal was received in another thread. This means that signals can’t be used as a means of inter-thread communication. You can use the synchronization primitives from the threading module instead.
->
-> Besides, only the main thread of the main interpreter is allowed to set a new signal handler.
-
-As a result, every job that requires the rendering of JavaScript fails and produces the following error:
-```
-ValueError: signal only works in main thread
-```
-Additional information and discussion of this sort of issue can be found [here](https://bugs.python.org/issue38904).
-
-I've created a temporary workaround by disabling pyppeteer's signal handling.
-The patch is applied automatically during the build of the Docker image.
-When the containers are started, the program runs normally.
-If you want to run the scraper outside a Docker container, you will need to overwrite the launcher settings by hand (see the files in the [patches](https://github.com/pi-sigma/nous-aggregator/tree/main/patches) folder for hints on how to do this).
-
-For a proper fix, APSscheduler should be replaced with Celery for running jobs.
