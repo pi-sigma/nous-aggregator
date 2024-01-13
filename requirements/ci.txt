@@ -53,7 +53,7 @@ dj-database-url==2.1.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   django-on-heroku
-django==4.2.5
+django==5.0.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

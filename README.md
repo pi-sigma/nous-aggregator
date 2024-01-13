@@ -1,7 +1,7 @@
 # Nous Aggregator
 
 [![Python 3.11](https://img.shields.io/badge/python-3.11-blue)](https://www.python.org/downloads/release/python-3110/)
-[![Django 4.05](https://img.shields.io/badge/django-4.2-blue)](https://docs.djangoproject.com/en/4.2/)
+[![Django 5.01](https://img.shields.io/badge/django-5.0-blue)](https://docs.djangoproject.com/en/5.0/)
 [![Django CI](https://github.com/pi-sigma/nous-aggregator/actions/workflows/django.yml/badge.svg)](https://github.com/pi-sigma/test/actions/workflows/django.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/pi-sigma/test/blob/main/LICENSE.md)
 

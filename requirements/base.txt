@@ -27,7 +27,7 @@ cssselect==1.2.0
     # via pyquery
 dj-database-url==2.1.0
     # via django-on-heroku
-django==4.2.5
+django==5.0.1
     # via
     #   -r requirements/base.in
     #   dj-database-url
