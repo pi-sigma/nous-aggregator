@@ -39,6 +39,8 @@ django-on-heroku==1.1.2
     # via -r requirements/base.in
 fake-useragent==1.2.1
     # via requests-html
+gunicorn==21.2.0
+    # via -r requirements/base.in
 idna==3.4
     # via requests
 importlib-metadata==6.8.0
@@ -47,6 +49,8 @@ langdetect==1.0.9
     # via -r requirements/base.in
 lxml==4.9.3
     # via pyquery
+packaging==23.2
+    # via gunicorn
 parse==1.19.1
     # via requests-html
 psycopg2==2.9.7
@@ -73,7 +77,7 @@ requests==2.31.0
     #   requests-html
 requests-html==0.10.0
     # via -r requirements/base.in
-sentry-sdk==1.31.0
+sentry-sdk==1.39.2
     # via -r requirements/base.in
 six==1.16.0
     # via
@@ -89,7 +93,7 @@ typing-extensions==4.7.1
     # via dj-database-url
 tzlocal==5.0.1
     # via apscheduler
-urllib3==1.26.16
+urllib3==1.26.18
     # via
     #   pyppeteer
     #   requests

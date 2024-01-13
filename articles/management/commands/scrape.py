@@ -17,7 +17,7 @@ from articles.scraper.spider import Spider
 
 logger = logging.getLogger(__name__)
 
-SCRAPING_INTERVAL = 1  # minutes
+SCRAPING_INTERVAL = 30  # minutes
 
 
 def scrape(sitemap: dict):

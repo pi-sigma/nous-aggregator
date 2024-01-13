@@ -1,9 +1,8 @@
-from .staging import *
-
 import django_on_heroku
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
+from .staging import *
 
 sentry_sdk.init(
     dsn="https://242fe72f1a234cecae5a3b1fad7bb4c0@o1410776.ingest.sentry.io/6748377",
