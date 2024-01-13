@@ -1,9 +1,3 @@
-"""
-Scheduler for scraping
-
-Jobs are stored in a Django job store. Old jobs should be deleted when
-the sources are changed; otherwise the scheduler will use the old information.
-"""
 import json
 import logging
 from datetime import datetime
@@ -23,11 +17,10 @@ from articles.scraper.spider import Spider
 
 logger = logging.getLogger(__name__)
 
-INTERVAL = 480  # interval in minutes for scraping
+SCRAPING_INTERVAL = 1  # minutes
 
 
 def scrape(sitemap: dict):
-    """Scrape newspapers/journals and store articles in database."""
     Spider.crawl(sitemap)
     data = [json.loads(article) for article in Spider.articles]
 
@@ -57,8 +50,6 @@ def delete_old_job_executions(max_age=604_800):
 
 
 class Command(BaseCommand):
-    """Create jobs."""
-
     def handle(self, *args, **options):
         scheduler = BlockingScheduler(
             timezone=settings.TIME_ZONE,
@@ -66,7 +57,6 @@ class Command(BaseCommand):
         )
         scheduler.add_jobstore(DjangoJobStore(), "default")
 
-        # jobs for scraping newspapers/journals
         sources = Source.objects.all()
         for index, source in enumerate(sources):
             source_id = f"Scraping {index + 1}: {source.name}"
@@ -77,7 +67,7 @@ class Command(BaseCommand):
                     scrape,
                     args=[source.to_dict()],
                     trigger="interval",
-                    minutes=INTERVAL,
+                    minutes=SCRAPING_INTERVAL,
                     misfire_grace_time=600,
                     id=source_id,
                     max_instances=1,

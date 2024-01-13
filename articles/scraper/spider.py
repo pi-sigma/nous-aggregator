@@ -16,8 +16,6 @@ logger = logging.getLogger(__name__)
 
 class Spider:
     """
-    The Spider class is for extracting article metadata.
-
     Class Attributes:
         headers (list): a collection of HTTP headers
         articles (set): a collection of JSON strings representing article
@@ -67,7 +65,7 @@ class Spider:
         if not response:
             return
 
-        if self.sitemap["javascript"]:
+        if self.sitemap["javascript_required"]:
             try:
                 await response.html.arender(timeout=settings.REQUESTS_TIMEOUT_JS)
             except pyppeteer.errors.TimeoutError as e:

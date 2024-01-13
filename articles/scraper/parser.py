@@ -1,4 +1,3 @@
-"""Provides access to the parsing function(s)"""
 import json
 import logging
 from typing import Optional

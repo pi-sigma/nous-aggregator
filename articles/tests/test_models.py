@@ -20,7 +20,7 @@ def test_source_to_dict(source_values):
     for attr_name in [
         "summary_selectors",
         "headline_selectors",
-        "javascript",
+        "javascript_required",
         "language",
         "paths",
     ]:

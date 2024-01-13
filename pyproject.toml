@@ -1,0 +1,6 @@
+[tool.mypy]
+plugins = ["mypy_django_plugin.main"]
+python_executable="home/pi-sigma/.virtualenvs/nous/bin/python"
+
+[tool.django-stubs]
+django_settings_module = "nous_aggregator.settings.local"

@@ -19,7 +19,7 @@ RUN apt-get update \
 COPY . /usr/src/app
 WORKDIR /usr/src/app
 
-RUN python manage.py collectstatic --no-input
+RUN python manage.py collectstatic --link --no-input
 
 # patch
 RUN ./patches/pyppeteer_patch.sh

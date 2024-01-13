@@ -6,7 +6,9 @@
 
 {% block content %}
 <div class="container container-sources">
-  <h3>Search Results for: "{{ query }}"</h3>
+  {% if query %}
+      <h3>Search Results for: "{{ query }}"</h3>
+  {% endif %}
   <div class="row">
     {% for source in sources %}
       <div class="col-md-12 col-lg-6 col-xl-4 container-articles-outer">

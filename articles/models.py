@@ -30,33 +30,32 @@ class Article(models.Model):
         __str__: string representation for the admin area
     """
 
-    headline = models.TextField(
-        _("headline"),
+    headline = models.CharField(
+        max_length=200,
         help_text=_("The headline of the article"),
     )
     slug = models.SlugField(
-        _("Slug"),
+        max_length=255,
         help_text=_("The slug of the article for SEO-friendly urls"),
     )
     created_at = models.DateTimeField()
     language = models.CharField(
-        _("language"),
         max_length=4,
         choices=Language.choices,
         blank=False,
         help_text=_("The language of the article"),
     )
     link = models.URLField(
-        _("link"), unique=True, help_text=_("The link to the article")
+        max_length=255,
+        unique=True,
+        help_text=_("The link to the article"),
     )
     summary = models.TextField(
-        _("summary"),
-        null=True,
         blank=True,
         help_text=_("A summary of the article"),
     )
     source = models.ForeignKey(
-        "Source",
+        to="Source",
         on_delete=models.CASCADE,
         related_name="articles",
         help_text=_("The source where the article is published"),
@@ -85,8 +84,8 @@ class Source(models.Model):
             the base url to tell the scraper where to look for hyper-links
             ('https://example.com/path1/')
         regex (models.CharField): a regular expression for filtering links
-        javascript (models.BooleanField): True if JavaScript must be rendered before
-            data can be extracted from the webpage, False otherwise
+        javascript_required (models.BooleanField): True if JavaScript must be rendered
+            before data can be extracted from the webpage, False otherwise
         headline_selectors (models.JSONField): information about the CSS selectors
             needed to extract the headline of an article
         summary_selectors (models.JSONField): information about the CSS selectors
@@ -99,34 +98,31 @@ class Source(models.Model):
     """
 
     name = models.CharField(
-        _("name"),
         max_length=128,
         unique=True,
         blank=False,
         help_text=_("The name of the source"),
     )
     slug = models.SlugField(
-        _("Slug"),
+        max_length=255,
         blank=True,
         help_text=_("The slug of the source for SEO-friendly urls"),
     )
     publication_type = models.CharField(
-        _("publication type"),
         max_length=24,
         choices=PublicationType.choices,
         blank=False,
         help_text=_("The type of publication of the source"),
     )
     language = models.CharField(
-        _("language"),
         max_length=4,
         choices=Language.choices,
         blank=True,
         help_text=_("The language of the article"),
     )
     link = models.URLField(
-        _("link"),
         unique=True,
+        max_length=255,
         validators=[URLValidator],
         help_text=_("The link to the source"),
     )
@@ -134,21 +130,18 @@ class Source(models.Model):
     # info related to scraping
     #
     paths = models.JSONField(
-        _("paths"),
         help_text=_(
             "A list of resource paths where the scraper will look for articles"
         ),
     )
     regex = models.CharField(
-        _("regex"),
         max_length=255,
         blank=True,
         help_text=(
             "Regular expression for filtering hyper-links found at the resource paths"
         ),
     )
-    javascript = models.BooleanField(
-        _("render javascript"),
+    javascript_required = models.BooleanField(
         default=False,
         help_text=_(
             "Whether the parsing of articles by this source requires rendering "
@@ -156,14 +149,12 @@ class Source(models.Model):
         ),
     )
     headline_selectors = models.JSONField(
-        _("headline selectors"),
         help_text=_(
             "Information about the structure of the target page needed to extract "
             "the headline of articles published by this source"
         ),
     )
     summary_selectors = models.JSONField(
-        _("summary selectors"),
         null=True,
         blank=True,
         help_text=_(
@@ -185,7 +176,7 @@ class Source(models.Model):
             "base_url": self.link,
             "paths": self.paths,
             "language": self.language,
-            "javascript": self.javascript,
+            "javascript_required": self.javascript_required,
             "filter": regex.compile(self.regex),
             "headline_selectors": self.headline_selectors,
             "summary_selectors": self.summary_selectors,

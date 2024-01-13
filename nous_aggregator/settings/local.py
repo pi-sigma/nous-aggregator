@@ -1,6 +1,5 @@
 from .base import *
 
-
 SECRET_KEY = "hush-hush"
 
 DEBUG = True
@@ -11,7 +10,6 @@ DATABASES = {
         'NAME': 'sqlite3.db',
     }
 }
-
 
 INSTALLED_APPS += [
     "debug_toolbar",
