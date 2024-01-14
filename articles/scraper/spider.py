@@ -1,7 +1,6 @@
 import asyncio
 import logging
 import random
-from http.cookiejar import DefaultCookiePolicy
 from typing import Optional
 
 import pyppeteer
@@ -112,7 +111,7 @@ class Spider:
         asyncio.set_event_loop(loop)
         asession = AsyncHTMLSession()
         # reject cookies
-        asession.cookies.set_policy(DefaultCookiePolicy(allowed_domains=[]))
+        # asession.cookies.set_policy(DefaultCookiePolicy(allowed_domains=[]))
         try:
             loop.run_until_complete(spider.collect_links(asession))
             loop.run_until_complete(spider.collect_metadata(asession))
