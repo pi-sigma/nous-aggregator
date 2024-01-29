@@ -1,10 +1,3 @@
-gunicorn
-
-# Django
-django
-django-apscheduler
-django-on-heroku
-
 # Python
 beautifulsoup4
 langdetect
@@ -16,3 +9,12 @@ psycopg2
 pyppeteer
 sentry-sdk
 websockets
+
+# Django
+django
+django-on-heroku
+
+# Other
+gunicorn
+redis
+celery

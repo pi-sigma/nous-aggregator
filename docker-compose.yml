@@ -6,38 +6,70 @@ services:
     volumes:
         - postgres_data:/var/lib/postgresql/data:rw
     environment:
-      - POSTGRES_HOST_AUTH_METHOD=trust
+      - POSTGRES_HOST_AUTH_METHOD=${POSTGRES_HOST_AUTH_METHOD}
+    ports:
+      - ${PG_DOCKER_MAPPING}
 
   web:
     image: nous_aggregator
-    build:
+    build: &web_build
       context: .
       dockerfile: Dockerfile.dev
+    environment: &web_env
+      - DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE}
+      - SECRET_KEY=${SECRET_KEY}
+        # Network
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
+      - CSRF_TRUSTED_ORIGINS=${CSRF_TRUSTED_ORIGINS}
+      - SESSION_COOKIE_SECURE=${SESSION_COOKIE_SECURE}
+      - CSRF_COOKIE_SECURE=${CSRF_COOKIE_SECURE}
+      - SECURE_SSL_REDIRECT=${SECURE_SSL_REDIRECT}
+        # Database
+      - DATABASE_ENGINE=${DATABASE_ENGINE}
+      - DATABASE_NAME=${DATABASE_NAME}
+      - DATABASE_USER=${DATABASE_USER}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+      - DATABASE_HOST=${DATABASE_HOST}
+      - DATABASE_PORT=${DATABASE_PORT}
+        # Redis + Celery
+      - REDIS_PORT=${REDIS_PORT}
+      - CELERY_BROKER_URL=${CELERY_BROKER_URL_DOCKER}
+      - CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND_DOCKER}
+      - CELERY_LOGLEVEL=${CELERY_LOGLEVEL}
+    volumes:
+      - .:/app
     command: >
       sh -c "python manage.py migrate &&
              python manage.py runserver 0.0.0.0:8000"
-    volumes:
-      - .:/usr/src/app
     ports:
       - "8000:8000"
     restart: always
-    env_file:
-      - ./.env
     depends_on:
       - db
+      - redis
 
-  scheduler:
-    image: nous_aggregator
-    environment:
-      DATABASE_HOST: "${DATABASE_HOST}"
-      DATABASE_PORT: "${DATABASE_PORT}"
-    command: >
-      sh -c "python manage.py scrape"
+  redis:
+    image: redis
+
+  celery-worker:
+    build: *web_build
+    environment: *web_env
+    command: celery -A nous_aggregator worker
     volumes:
-      - .:/usr/src/app
+      - .:/app
     depends_on:
-      - web
       - db
+      - redis
+
+  celery-beat:
+    build: *web_build
+    environment: *web_env
+    command: celery -A nous_aggregator beat
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+      - redis
 
 volumes:
   postgres_data:

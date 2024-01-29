@@ -1,10 +1,40 @@
 import os
 from pathlib import Path
 
+from decouple import Csv, config
+
+from scraper import tasks as scraper_tasks
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 # (modified because settings files are nested one level deeper)
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
+
+SECRET_KEY = config("SECRET_KEY", default="")
+
+DEBUG = config("DEBUG", default=False, cast=bool)
+
+ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="", cast=Csv())
+
+CSRF_TRUSTED_ORIGINS = config("CSRF_TRUSTED_ORIGINS", default="", cast=Csv())
+
+SESSION_COOKIE_SECURE = config("SESSION_COOKIE_SECURE", default=True, cast=bool)
+
+CSRF_COOKIE_SECURE = config("CSRF_COOKIE_SECURE", default=True, cast=bool)
+
+SECURE_SSL_REDIRECT = config("SECURE_SSL_REDIRECT", default=True, cast=bool)
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+DATABASES = {
+    "default": {
+        "ENGINE": config("DATABASE_ENGINE", default="django.db.backends.postgresql"),
+        "NAME": config("DATABASE_NAME", default="postgres"),
+        "USER": config("DATABASE_USER", default="postgres"),
+        "PASSWORD": config("DATABASE_PASSWORD", default="postgres"),
+        "HOST": config("DATABASE_HOST", default="localhost"),
+        "PORT": config("DATABASE_PORT", default=5432, cast=int),
+    },
+}
 
 
 # Application definition
@@ -17,10 +47,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.humanize",
-    # My Apps
+    # nous_aggregator apps
     "articles.apps.ArticlesConfig",
-    # Third Party Apps
-    "django_apscheduler",
 ]
 
 MIDDLEWARE = [
@@ -38,11 +66,6 @@ ROOT_URLCONF = "nous_aggregator.urls"
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
-
-# Timeouts (connection timeout, read timeout) in seconds for requests
-# made with the requests library
-REQUESTS_TIMEOUT = (6, 18)
-REQUESTS_TIMEOUT_JS = (6, 60)
 
 TEMPLATES = [
     {
@@ -154,3 +177,19 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Timeouts (connection timeout, read timeout) in seconds for requests
+REQUESTS_TIMEOUT = (30, 60)
+
+# Celery
+CELERY_BROKER_URL = config("CELERY_BROKER_URL", "redis://localhost:6379")
+CELERY_RESULT_BACKEND = config("CELERY_RESULT_BACKEND", "redis://localhost:6379")
+CELERY_BEAT_SCHEDULE = {
+    "get_articles_en": {
+        "task": "articles.tasks.get_articles",
+        "schedule": scraper_tasks.magazines["en"]["schedule"],
+        "kwargs": {
+            "language": "en",
+        }
+    }
+}

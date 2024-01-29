@@ -13,15 +13,12 @@ RUN apt-get update \
   && pip install psycopg2 \
   # pyppeteer deps (cf. https://stackoverflow.com/a/71935536)
   && xargs apt-get install -y --no-install-recommends < requirements/pyppeteer_deps.txt \
-  && pip install -r requirements/base.txt
+  && pip install -r requirements/production.txt
 
 COPY . /usr/src/app
 WORKDIR /usr/src/app
 
-RUN python manage.py collectstatic --no-input
-
-# patch
-RUN ./patches/pyppeteer_patch.sh
+RUN python manage.py collectstatic --link --no-input
 
 RUN useradd -m myuser
 USER myuser

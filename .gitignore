@@ -12,6 +12,9 @@ staticfiles/
 dev/
 logs/*.log*
 
+### celery etc.
+celerybeat-schedule
+
 ### Unit test / coverage reports
 htmlcov/
 .tox/

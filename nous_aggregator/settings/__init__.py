@@ -10,11 +10,9 @@ from decouple import config
 DJANGO_ENV = config('DJANGO_ENV', default="")
 
 match DJANGO_ENV:
-    case "CI":
-        from .ci import *
+    case "BASE":
+        from .base import *
     case "LOCAL":
         from .local import *
-    case "STAGING":
-        from .staging import *
     case "":
         from .production import *

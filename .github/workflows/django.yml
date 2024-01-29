@@ -1,10 +1,6 @@
 name: Django CI
 
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+on: [ push, pull_request ]
 
 jobs:
   #
@@ -58,7 +54,9 @@ jobs:
           pip install -r requirements/ci.txt
       - name: Run tests
         env:
-          DJANGO_ENV: "CI"
+          SECRET_KEY: dummy
+          DJANGO_ENV: BASE
+          SECURE_SSL_REDIRECT: False
         run: pytest articles/tests/
   #
   # Migrations
@@ -91,4 +89,5 @@ jobs:
         run: |
           python manage.py makemigrations --check --dry-run
         env:
-          DJANGO_ENV: "CI"
+          SECRET_KEY: dummy
+          DJANGO_ENV: BASE
