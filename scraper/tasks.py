@@ -1,6 +1,6 @@
 magazines = {
     "en": {
-        "schedule": 3600 * 4,  # 4h
+        "schedule": 3600,
         "titles": [
             "Al Jazeera",
             "Associated Press",

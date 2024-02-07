@@ -14,7 +14,7 @@ services:
     image: nous_aggregator
     build: &web_build
       context: .
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     environment: &web_env
       - DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE}
       - SECRET_KEY=${SECRET_KEY}

@@ -1,24 +1,46 @@
-FROM python:3.10-slim
+#
+# Backend build
+#
+FROM python:3.11-slim-bookworm AS backend
 
-ENV PIP_DISABLE_PIP_VERSION_CHECK 1
+# build deps
+RUN apt-get update && apt-get upgrade && apt-get install -y --no-install-recommends \
+        build-essential \
+        libpq-dev
+
+# get latest version of pip
+RUN pip install pip -U
+
+# install requirements
+COPY /requirements/* /app/requirements/
+RUN pip install -r /app/requirements/base.txt
+
+# pyppeteer deps (https://stackoverflow.com/a/71935536)
+RUN xargs apt-get install -y --no-install-recommends < /app/requirements/pyppeteer_deps.txt
+
+
+#
+# Final build
+#
+FROM python:3.11-slim-bookworm AS final
+
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
+ENV DJANGO_ENV "BASE"
 
-COPY requirements/* requirements/
+RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
+        postgresql-client
 
-RUN apt-get update \
-  # psycopg2 + deps
-  && apt-get install -y --no-install-recommends build-essential \
-  && apt-get install -y --no-install-recommends libpq-dev \
-  && pip install psycopg2 \
-  # pyppeteer deps (cf. https://stackoverflow.com/a/71935536)
-  && xargs apt-get install -y --no-install-recommends < requirements/pyppeteer_deps.txt \
-  && pip install -r requirements/production.txt
+# copy backend deps
+COPY --from=backend /usr/local/lib/python3.11 /usr/local/lib/python3.11
+COPY --from=backend /usr/local/bin/ /usr/local/bin/
 
-COPY . /usr/src/app
-WORKDIR /usr/src/app
+COPY . /app
+WORKDIR /app
+
+# create user and drop privileges
+RUN useradd -m pi-sigma
+RUN chown -R pi-sigma /app
+USER pi-sigma
 
 RUN python manage.py collectstatic --link --no-input
-
-RUN useradd -m myuser
-USER myuser

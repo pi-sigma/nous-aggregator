@@ -68,8 +68,8 @@ http://localhost:8000
 ```
 
 If all went well, you should see the homepage of the app with a list of news sources arranged in a grid.
-The grids are empty to begin with, but the celery workers will start right away and you should see the
-first articles displayed shortly thereafter.
+The grids are empty to begin with and fill up when the celery workers start
+(depends on the schedule in `scraper.tasks`).
 
 In order to extract data about the sources from the database, use the following command while the web container is running (the commands for the other tables are analogous):
 ```sh
