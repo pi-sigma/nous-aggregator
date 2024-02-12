@@ -94,7 +94,7 @@ def parse(html: str, sitemap: dict, url: str) -> Optional[str]:
         "slug": slugify(headline),
         "summary": summary if summary else "No description",
         "language": language,
-        "link": url,
+        "url": url,
         "source_link": sitemap["base_url"],
     }
     json_data = json.dumps(article)

@@ -22,9 +22,10 @@ def test_index_view(client, source_instance, article_instance):
     source_link = doc.find(".source-link")
     source_link_href = source_link.attr("href")
 
+
     assert source_name == source_instance.name
     assert source_link.is_("a")
-    assert source_link_href == source_instance.link
+    assert source_link_href == source_instance.url
 
     # assert that details of article are present in response content
     article_headline = doc.find(".article-headline").text()
@@ -34,7 +35,7 @@ def test_index_view(client, source_instance, article_instance):
 
     assert article_headline == article_instance.headline
     assert article_link.is_("a")
-    assert article_link_href == article_instance.link
+    assert article_link_href == article_instance.url
     assert article_instance.headline in article_link_title
 
 
@@ -64,7 +65,7 @@ def test_search_results_view(
 
     assert source_name == source_instance.name
     assert source_link.is_("a")
-    assert source_link_href == source_instance.link
+    assert source_link_href == source_instance.url
 
     # assert that details of article matching query are present in response content
     article_headline = doc.find(".article-headline").text()
@@ -74,17 +75,17 @@ def test_search_results_view(
 
     assert article_headline == article_instance.headline
     assert article_link.is_("a")
-    assert article_link_href == article_instance.link
+    assert article_link_href == article_instance.url
     assert article_instance.headline in article_link_title
     assert article_instance.summary in article_link_title
 
     # assert that details of non-matching source are not found
     assert source_instance_2.name not in html
-    assert source_instance_2.link not in html
+    assert source_instance_2.url not in html
 
     # assert that details of non-matching article are not found
     assert article_instance_2.headline not in html
-    assert article_instance_2.link not in html
+    assert article_instance_2.url not in html
     assert article_instance_2.summary not in html
 
 
@@ -104,11 +105,11 @@ def test_search_result_not_found(
 
     # assert that details of non-matching source are not found
     assert source_instance.name not in html
-    assert source_instance.link not in html
+    assert source_instance.url not in html
 
     # assert that details of non-matching article are not found
     assert article_instance.headline not in html
-    assert article_instance.link not in html
+    assert article_instance.url not in html
     assert article_instance.summary not in html
 
 
@@ -127,9 +128,9 @@ def test_search_result_substring(
 
     # assert that details of non-matching source are not found
     assert source_instance.name not in html
-    assert source_instance.link not in html
+    assert source_instance.url not in html
 
     # assert that details of non-matching article are not found
     assert article_instance.headline not in html
-    assert article_instance.link not in html
+    assert article_instance.url not in html
     assert article_instance.summary not in html

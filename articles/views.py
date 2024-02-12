@@ -8,14 +8,14 @@ from .models import Article, Source
 
 def index(request):
     context = {
-        "sources": Source.objects.only("name", "link", "publication_type"),
+        "sources": Source.objects.only("name", "url", "publication_type"),
     }
     return render(request, "articles/index.html", context)
 
 
 class SearchResultsView(ListView):
     model = Article
-    fields = ["headline", "link", "body"]
+    fields = ["headline", "url", "body"]
     template_name = "articles/search_results.html"
 
     def get_context_data(self, **kwargs):
@@ -28,7 +28,7 @@ class SearchResultsView(ListView):
             regex = r"(?<![a-zA-Z])" + re.escape(query) + r"(?![a-rA-Rt-zT-Z])"
             context.update(
                 {
-                    "sources": Source.objects.only("name", "link", "publication_type")
+                    "sources": Source.objects.only("name", "url", "publication_type")
                                              .filter(articles__headline__iregex=regex)
                                              .distinct(),
                     "query": query,

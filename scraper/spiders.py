@@ -7,7 +7,7 @@ import pyppeteer
 import requests
 from django.conf import settings
 from requests_html import AsyncHTMLSession, HTMLResponse
-from websockets.exceptions import ConnectionClosedError
+from websockets.exceptions import ConnectionClosedError  # pyre-ignore
 
 from . import headers, parser
 
@@ -20,8 +20,13 @@ class Spider:
         headers (list): a collection of HTTP headers
 
     Instance Attributes:
+        event_loop: the event loop is explicitly set on the `Spider` instance and
+            passed to the requests session in order to minimize the risk of
+            attaching Futures to different event loops by accident
+        asession (AsyncHTMLSession): requests session that supports asynchronous
+            requests
         sitemap (dict): contains information about a particular page
-        starting_urls (list): the urls where each Spider object searches for
+        starting_urls (list): the urls where each `Spider` instance searches for
             links
         links (set): urls of pages targeted for scraping
         articles (set): a collection of JSON strings representing article
@@ -30,19 +35,29 @@ class Spider:
 
     headers = headers.headers
 
-    def __init__(self, starting_urls: list, sitemap: dict):
-        self.sitemap = sitemap
-        self.starting_urls = starting_urls
+    def __init__(self, starting_urls: list[str], sitemap: dict):
+        self.event_loop = asyncio.get_event_loop()
+        self.asession = AsyncHTMLSession(loop=self.event_loop)
+        self.sitemap: dict = sitemap
+        self.starting_urls: list[str] = starting_urls
         self.links: set[str] = set()
         self.articles: set[str] = set()
 
-    @staticmethod
-    async def connect(asession: AsyncHTMLSession, url: str) -> HTMLResponse | None:
+        @property
+        def asession(self):
+            return self._asession
+
+        @asession.setter
+        def asession(self, asession: AsyncHTMLSession):
+            self._asession = asession
+            self._asession.cookies.set_policy(DefaultCookiePolicy(allowed_domains=[]))
+
+    async def connect(self, url: str) -> HTMLResponse | None:
         """GET request wrapper"""
         try:
-            response = await asession.get(
+            response = await self.asession.get(  # pyre-ignore
                 url,
-                headers=random.choice(Spider.headers),  # nosec
+                headers=random.choice(self.headers),  # nosec
                 timeout=settings.REQUESTS_TIMEOUT,
             )
         except requests.exceptions.RequestException as e:
@@ -50,22 +65,22 @@ class Spider:
             return None
         return response
 
-    async def get_links(self, asession: AsyncHTMLSession, url: str):
-        response = await Spider.connect(asession, url)
+    async def get_links(self, url: str) -> None:
+        response = await self.connect(url)
         if not response:
             return
 
         if self.sitemap["javascript_required"]:
             try:
-                await response.html.arender(timeout=settings.REQUESTS_TIMEOUT)
+                await response.html.arender()
             except pyppeteer.errors.TimeoutError as e:
                 logger.error("Could not render JavaScript for %s (%s)", url, e)
         for link in response.html.absolute_links:
             if self.sitemap["filter"].search(link):
                 self.links.add(link)
 
-    async def scrape(self, asession: AsyncHTMLSession, url: str):
-        response = await Spider.connect(asession, url)
+    async def scrape(self, url: str) -> None:
+        response = await self.connect(url)
         if not response:
             return
 
@@ -74,31 +89,26 @@ class Spider:
         if article:
             self.articles.add(article)
 
-    async def collect_links(self, asession: AsyncHTMLSession):
+    async def collect_links(self) -> None:
         """
         Create & gather tasks for collection of links
         """
-        coros = [self.get_links(asession, url) for url in self.starting_urls]
+        coros = [self.get_links(url) for url in self.starting_urls]
         await asyncio.gather(*coros)
 
-    async def collect_metadata(self, asession: AsyncHTMLSession):
+    async def collect_metadata(self) -> None:
         """
         Create & gather tasks for scraping
         """
-        coros = [self.scrape(asession, link) for link in self.links]
+        coros = [self.scrape(link) for link in self.links]
         await asyncio.gather(*coros)
 
-
-def run(spider: Spider):
-    """
-    Run `spider` with async HTML session inside event loop
-    """
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    asession = AsyncHTMLSession()
-    asession.cookies.set_policy(DefaultCookiePolicy(allowed_domains=[]))
-    try:
-        loop.run_until_complete(spider.collect_links(asession))
-        loop.run_until_complete(spider.collect_metadata(asession))
-    except ConnectionClosedError as ex:
-        logger.warning("Connection closed", exc_info=ex)
+    def run(self):
+        """
+        Run the `spider` instance inside the event loop
+        """
+        try:
+            self.event_loop.run_until_complete(self.collect_links())
+            self.event_loop.run_until_complete(self.collect_metadata())
+        except ConnectionClosedError as ex:
+            logger.warning("Connection closed", exc_info=ex)

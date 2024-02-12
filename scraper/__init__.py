@@ -1,1 +1,3 @@
-from .spiders import Spider, run
+from .spiders import Spider
+
+__all__ = [Spider]

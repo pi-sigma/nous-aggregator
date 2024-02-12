@@ -26,7 +26,7 @@ def test_source_to_dict(source_values):
     ]:
         assert getattr(source, attr_name) == sitemap.get(attr_name)
 
-    assert source.link == sitemap["base_url"]
+    assert source.url == sitemap["base_url"]
     assert regex.compile(source.regex) == sitemap["filter"]
 
 

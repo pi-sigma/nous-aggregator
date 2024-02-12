@@ -18,7 +18,7 @@ def get_articles_for_source(source_title: str):
     ]
 
     spider = scraper.Spider(starting_urls, sitemap)
-    scraper.run(spider)
+    spider.run()
     data = [json.loads(article) for article in spider.articles]
 
     Article.objects.bulk_create([
@@ -28,7 +28,7 @@ def get_articles_for_source(source_title: str):
             source=Source.objects.get(link=article_data["source_link"]),
             summary=article_data["summary"],
             language=article_data["language"],
-            link=article_data["link"],
+            url=article_data["url"],
             created_at=timezone.now(),
         ) for article_data in data
     ], ignore_conflicts=True)

@@ -14,7 +14,7 @@ def source_values():
     return {
         "name": "Fake News",
         "slug": "fake-news",
-        "link": "https://www.hocusbogus.com/",
+        "url": "https://www.hocusbogus.com/",
         "publication_type": PublicationType.newspaper,
         "language": Language.en,
         "paths": ["world/"],
@@ -35,7 +35,7 @@ def source_values_2():
     return {
         "name": "Alternative Facts",
         "slug": "alternative-facts",
-        "link": "https://www.nonsensical.org/",
+        "url": "https://www.nonsensical.org/",
         "publication_type": PublicationType.newspaper,
         "language": Language.en,
         "paths": ["world/"],
@@ -57,7 +57,7 @@ def article_values(source_instance):
         "headline": "A cow jumps over the moon",
         "slug": "a-cow-jumps-over-the-moon",
         "summary": "Lorem dolor sit amet...",
-        "link": "https://www.hocusbogus.com/2022/05/08/foobar",
+        "url": "https://www.hocusbogus.com/2022/05/08/foobar",
         "source": source_instance,
         "created_at": timezone.localtime(),
     }
@@ -69,7 +69,7 @@ def article_values_m(source_values):
         "headline": "A cow jumps over the moon",
         "slug": "a-cow-jumps-over-the-moon",
         "summary": "Lorem dolor sit amet...",
-        "link": "https://www.hocusbogus.com/2022/05/08/foobar",
+        "url": "https://www.hocusbogus.com/2022/05/08/foobar",
         "source": Source(**source_values),
         "created_at": timezone.localtime(),
     }
@@ -86,7 +86,7 @@ def article_values_2(source_instance):
         "headline": "The moon is made of cheese",
         "slug": "the-moon-is-made-of-cheese",
         "summary": "Consectetur adipiscing elit, sed do eiusmod tempor incididunt...",
-        "link": "https://www.nonsensical.org/2022/05/08/baz",
+        "url": "https://www.nonsensical.org/2022/05/08/baz",
         "source": source_instance,
         "created_at": timezone.localtime(),
     }

@@ -19,7 +19,7 @@ class Article(models.Model):
             this can vary. Actual dates are not used because their format
             varies a lot, hence they are difficult to parse.
         language (models.CharField): the language of the article
-        link (models.URLField): link to the article
+        url (models.URLField): link to the article
         body (models.TextField): either the actual body of the article,
             or a short desriptive paragraph
 
@@ -45,7 +45,7 @@ class Article(models.Model):
         blank=False,
         help_text=_("The language of the article"),
     )
-    link = models.URLField(
+    url = models.URLField(
         max_length=255,
         unique=True,
         help_text=_("The link to the article"),
@@ -63,7 +63,7 @@ class Article(models.Model):
 
     class Meta:
         ordering = ("-created_at",)
-        indexes = [models.Index(fields=["headline", "link"])]
+        indexes = [models.Index(fields=["headline", "url"])]
 
     def __str__(self):
         return f"{self.source}: {self.headline}"
@@ -79,7 +79,7 @@ class Source(models.Model):
         publication_type (models.CharField): the type of publication of the
             source (newspaper, journal, blog...)
         language (models.CharField): the language of the source
-        link (models.URLField): the base url of the source
+        url (models.URLField): the base url of the source
         paths (models.JSONField): a list of paths, each of which is appended to
             the base url to tell the scraper where to look for hyper-links
             ('https://example.com/path1/')
@@ -120,11 +120,10 @@ class Source(models.Model):
         blank=True,
         help_text=_("The language of the article"),
     )
-    link = models.URLField(
+    url = models.URLField(
         unique=True,
         max_length=255,
-        validators=[URLValidator],
-        help_text=_("The link to the source"),
+        help_text=_("The url of the source"),
     )
     #
     # info related to scraping
@@ -173,7 +172,7 @@ class Source(models.Model):
 
     def to_dict(self):
         sitemap = {
-            "base_url": self.link,
+            "base_url": self.url,
             "paths": self.paths,
             "language": self.language,
             "javascript_required": self.javascript_required,
