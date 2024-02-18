@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from typing import Any, Dict, List, Union
 
 from decouple import Csv, config
 
@@ -7,7 +8,7 @@ from scraper import tasks as scraper_tasks
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 # (modified because settings files are nested one level deeper)
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
+BASE_DIR: Path = Path(__file__).resolve().parent.parent.parent
 
 SECRET_KEY = config("SECRET_KEY", default="")
 
@@ -25,7 +26,7 @@ SECURE_SSL_REDIRECT = config("SECURE_SSL_REDIRECT", default=True, cast=bool)
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-DATABASES = {
+DATABASES: Dict[str, Dict[str, Any]] = {
     "default": {
         "ENGINE": config("DATABASE_ENGINE", default="django.db.backends.postgresql"),
         "NAME": config("DATABASE_NAME", default="postgres"),
@@ -88,8 +89,8 @@ WSGI_APPLICATION = "nous_aggregator.wsgi.application"
 
 # Logging
 
-LOG_DIR = BASE_DIR / "logs"
-LOGGING = {
+LOG_DIR: Path = BASE_DIR / "logs"
+LOGGING: Dict[str, Union[Dict[str, Dict[str, str]], Dict[str, Dict[str, Union[List[str], bool, str]]], Dict[str, Dict[str, Union[int, str]]], int]] = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {
@@ -170,7 +171,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_URL = "static/"
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT: str = os.path.join(BASE_DIR, 'static')
 
 
 # Default primary key field type
@@ -178,13 +179,13 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# Timeouts (connection timeout, read timeout) in seconds for requests
-REQUESTS_TIMEOUT = (30, 60)
+# Timeout in seconds for HTTP requests
+REQUESTS_TIMEOUT = 30
 
 # Celery
 CELERY_BROKER_URL = config("CELERY_BROKER_URL", "redis://localhost:6379")
 CELERY_RESULT_BACKEND = config("CELERY_RESULT_BACKEND", "redis://localhost:6379")
-CELERY_BEAT_SCHEDULE = {
+CELERY_BEAT_SCHEDULE: Dict[str, Dict[str, Union[Dict[str, str], List[str], int, str]]] = {
     "get_articles_en": {
         "task": "articles.tasks.get_articles",
         "schedule": scraper_tasks.magazines["en"]["schedule"],

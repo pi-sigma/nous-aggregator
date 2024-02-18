@@ -1,21 +1,41 @@
 import json
 from pathlib import Path
+from typing import Any, Dict
 
 import pytest
+from django.utils.text import slugify
 
-import scraper
+from articles.constants import Language, PublicationType
+from articles.models import Source
 from scraper.spiders import Spider
 
+from ..mocks import MockResponse
 from ..utils import read_file
 
-FILES_DIR = Path(__file__).parent.parent.resolve() / "files" / "articles" / "aj"
+FILES_DIR: Path = Path(__file__).parent.parent.resolve() / "files" / "articles" / "aj"
 
 
 #
 # fixtures
 #
 @pytest.fixture
-def contents():
+def source():
+    return Source(
+        title="Al Jazeera",
+        slug=slugify("Al Jazeera"),
+        publication_type=PublicationType.newspaper,
+        language=Language.en,
+        url="https://www.aljazeera.com/",
+        paths=["news/"],
+        regex="(?<!liveblog)/[0-9]{4}/[0-9]+/[0-9]+/(?!.*terms-and-conditions/|.*community-rules-guidelines/|.*eu-eea-regulatory|.*code-of-ethics|.*liveblog)",
+        javascript_required=False,
+        headline_selectors={'tag': 'h1', 'attrs': {}},
+        summary_selectors={'tag': 'p', 'attrs': {'class': 'article__subhead'}},
+    )
+
+
+@pytest.fixture
+def contents() -> Dict[str, Dict[str, Any]]:
     contents = {
         "_start": {
             "link": "https://www.aljazeera.com/news/",
@@ -87,15 +107,30 @@ def contents():
 #
 # tests
 #
-def test_run_spider(starting_urls_aj, sitemap_aj, contents, expected_aj, requests_mock):
-    spider = Spider(starting_urls_aj, sitemap_aj)
+@pytest.mark.django_db
+def test_run_spider(source, contents, expected_aj, mocker) -> None:
+    #
+    # setup
+    #
+    def return_value(*args, **kwargs):
+        for k, v in contents.items():
+            if args[0] == v["link"]:
+                return MockResponse(text=v["content"])
 
-    for item in contents.values():
-        requests_mock.get(item["link"], text=item["content"])
+    mocker.patch("aiohttp.ClientSession.get", side_effect=return_value)
+
+    #
+    # asserts
+    #
+    sitemap = source.to_dict()
+    starting_urls = [
+        sitemap["base_url"] + path for path in sitemap["paths"]
+    ]
+    spider = Spider(starting_urls, sitemap)
 
     spider.run()
 
-    articles = [json.loads(article) for article in list(spider.articles)]
+    articles = [json.loads(article) for article in spider.articles]
 
     assert len(articles) == 12
 

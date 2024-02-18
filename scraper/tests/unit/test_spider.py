@@ -1,51 +1,77 @@
 import json
+import logging
 from pathlib import Path
 
+import aiohttp  # pyre-ignore
 import pytest
-from requests_html import AsyncHTMLSession
+from aiohttp.web_exceptions import HTTPError
 
 from scraper.spiders import Spider
 
+from ..mocks import MockResponse
 from ..utils import read_file
 
-FILES_DIR = Path(__file__).parent.parent.resolve() / "files" / "articles" / "aj"
+FILES_DIR: Path = Path(__file__).parent.parent.resolve() / "files" / "articles" / "aj"
 
 
 @pytest.mark.asyncio
-async def test_collect_links(starting_urls_aj, sitemap_aj, requests_mock):
+async def test_connect_error(starting_urls_aj, sitemap_aj, mocker, caplog):
     spider = Spider(starting_urls_aj, sitemap_aj)
-    spider.asession = AsyncHTMLSession()
 
+    mocker.patch("aiohttp.ClientSession.get", side_effect=HTTPError)
+
+    with caplog.at_level(logging.ERROR):
+        async with aiohttp.ClientSession() as session:
+            html = await spider.connect(session, starting_urls_aj[0])
+
+            assert html is None
+
+            assert len(caplog.messages) == 1
+            assert caplog.messages[0] == f"Could not fetch {starting_urls_aj[0]}"
+
+
+@pytest.mark.asyncio
+async def test_collect_links(starting_urls_aj, sitemap_aj, mocker):
+    spider = Spider(starting_urls_aj, sitemap_aj)
     html = read_file(directory=FILES_DIR, file_name="_start.html")
 
-    requests_mock.get(starting_urls_aj[0], text=html)
+    mock_response = MockResponse(status_code=200, text=html)
+    mocker.patch("aiohttp.ClientSession.get", return_value=mock_response)
 
-    await spider.collect_links()
+    async with aiohttp.ClientSession() as session:
+        await spider.collect_links(session, starting_urls_aj)
 
-    assert len(spider.links) == 12
+        assert len(spider.links) == 12
 
 
 @pytest.mark.asyncio
 async def test_collect_metadata(
-    starting_urls_aj, sitemap_aj, expected_aj, requests_mock
-):
+    starting_urls_aj, sitemap_aj, expected_aj, mocker
+) -> None:
     #
     # setup
     #
     spider = Spider(starting_urls_aj, sitemap_aj)
-    spider.links = ["https://indonesia.com", "https://taiwan.com"]
-    spider.asession = AsyncHTMLSession()
+    spider.links = {"https://indonesia.com", "https://taiwan.com"}
 
     html_indonesia = read_file(directory=FILES_DIR, file_name="indonesia.html")
     html_taiwan = read_file(directory=FILES_DIR, file_name="taiwan.html")
 
-    requests_mock.get("https://indonesia.com", text=html_indonesia)
-    requests_mock.get("https://taiwan.com", text=html_taiwan)
+    def return_value(*args, **kwargs):
+        mock_response1 = MockResponse(status_code=200, text=html_indonesia)
+        mock_response2 = MockResponse(status_code=200, text=html_taiwan)
+
+        if args[0] == "https://indonesia.com":
+            return mock_response1
+        elif args[0] == "https://taiwan.com":
+            return mock_response2
+
+    mocker.patch("aiohttp.ClientSession.get", side_effect=return_value)
 
     #
     # asserts
     #
-    await spider.collect_metadata()
+    await spider.collect_metadata(aiohttp.ClientSession(), spider.links)
 
     articles = [json.loads(article) for article in spider.articles]
 

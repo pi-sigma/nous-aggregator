@@ -6,14 +6,14 @@ from ..models import Article, Source
 #
 # Test Source
 #
-def test_create_source(source_values):
+def test_create_source(source_values) -> None:
     source = Source(**source_values)
 
     for attr_name in source_values:
         assert getattr(source, attr_name) == source_values.get(attr_name)
 
 
-def test_source_to_dict(source_values):
+def test_source_to_dict(source_values) -> None:
     source = Source(**source_values)
     sitemap = source.to_dict()
 
@@ -30,7 +30,7 @@ def test_source_to_dict(source_values):
     assert regex.compile(source.regex) == sitemap["filter"]
 
 
-def test_source_str_representation(source_values):
+def test_source_str_representation(source_values) -> None:
     source = Source(**source_values)
 
     assert str(source) == "Fake News"
@@ -39,14 +39,14 @@ def test_source_str_representation(source_values):
 #
 # Test Article
 #
-def test_create_article(article_values_m):
+def test_create_article(article_values_m) -> None:
     article = Article(**article_values_m)
 
     for attr_name in article_values_m:
         assert getattr(article, attr_name) == article_values_m.get(attr_name)
 
 
-def test_article_representation(article_values_m):
+def test_article_representation(article_values_m) -> None:
     article = Article(**article_values_m)
 
     assert str(article) == (f"{article.source}: {article.headline}")

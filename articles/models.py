@@ -74,7 +74,7 @@ class Source(models.Model):
     Metadata about the source of articles
 
     Fields:
-        name (models.CharField): name of the source
+        title (models.CharField): name of the source
         slug (models.SlugField): slug of the source
         publication_type (models.CharField): the type of publication of the
             source (newspaper, journal, blog...)
@@ -97,7 +97,7 @@ class Source(models.Model):
             scraper
     """
 
-    name = models.CharField(
+    title = models.CharField(
         max_length=128,
         unique=True,
         blank=False,
@@ -164,11 +164,11 @@ class Source(models.Model):
 
     class Meta:
         ordering = [
-            Lower("name"),
+            Lower("title"),
         ]
 
     def __str__(self):
-        return f"{self.name}"
+        return f"{self.title}"
 
     def to_dict(self):
         sitemap = {

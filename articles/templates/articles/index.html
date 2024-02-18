@@ -9,7 +9,7 @@
   <div class="row">
     {% for source in sources %}
       <div class="col-md-12 col-lg-6 col-xl-4 container-articles-outer">
-	<div class="source"><a class="source-link" href="{{ source.url }}"><h5 class="source-name">{{ source.name }}</h5></a></div>
+	<div class="source"><a class="source-link" href="{{ source.url }}"><h5 class="source-title">{{ source.title }}</h5></a></div>
 	<div class="container-articles-inner">
 	<ul class="article-list">
 	  {% for article in source.articles.all|slice:":10" %}

@@ -1,3 +1,5 @@
+from typing import Dict, List
+
 import pytest
 import regex
 
@@ -18,12 +20,12 @@ def sitemap_aj():
 
 
 @pytest.fixture
-def starting_urls_aj():
+def starting_urls_aj() -> List[str]:
     return ["https://www.aljazeera.com/news/"]
 
 
 @pytest.fixture
-def expected_aj():
+def expected_aj() -> Dict[str, Dict[str, str]]:
     expected = {
         "asian_cup": {
             'headline': 'Asian Cup final brings FIFA World Cup frenzy back to Qatar’s Souq Waqif',

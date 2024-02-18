@@ -15,6 +15,7 @@ services:
     build: &web_build
       context: .
       dockerfile: Dockerfile
+    restart: always
     environment: &web_env
       - DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE}
       - SECRET_KEY=${SECRET_KEY}
@@ -43,7 +44,6 @@ services:
              python manage.py runserver 0.0.0.0:8000"
     ports:
       - "8000:8000"
-    restart: always
     depends_on:
       - db
       - redis

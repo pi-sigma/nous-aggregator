@@ -10,8 +10,8 @@ from .models import Article, Source
 
 
 @shared_task
-def get_articles_for_source(source_title: str):
-    source: Source = Source.objects.get(name=source_title)
+def get_articles_for_source(source_title: str) -> None:
+    source: Source = Source.objects.get(title=source_title)
     sitemap = source.to_dict()
     starting_urls = [
         sitemap["base_url"] + path for path in sitemap["paths"]
@@ -19,18 +19,18 @@ def get_articles_for_source(source_title: str):
 
     spider = scraper.Spider(starting_urls, sitemap)
     spider.run()
-    data = [json.loads(article) for article in spider.articles]
+    articles = [json.loads(article) for article in spider.articles]
 
     Article.objects.bulk_create([
         Article(
             headline=article_data["headline"],
             slug=article_data["slug"],
-            source=Source.objects.get(link=article_data["source_link"]),
+            source=Source.objects.get(url=article_data["source_link"]),
             summary=article_data["summary"],
             language=article_data["language"],
             url=article_data["url"],
             created_at=timezone.now(),
-        ) for article_data in data
+        ) for article_data in articles
     ], ignore_conflicts=True)
 
 

@@ -1,3 +1,6 @@
+from datetime import datetime
+from typing import Dict, Union
+
 import pytest
 from django.test import Client
 from django.utils import timezone
@@ -6,13 +9,10 @@ from ..constants import Language, PublicationType
 from ..models import Article, Source
 
 
-#
-# Test fixtures
-#
 @pytest.fixture
 def source_values():
     return {
-        "name": "Fake News",
+        "title": "Fake News",
         "slug": "fake-news",
         "url": "https://www.hocusbogus.com/",
         "publication_type": PublicationType.newspaper,
@@ -33,7 +33,7 @@ def source_instance(source_values):
 @pytest.fixture
 def source_values_2():
     return {
-        "name": "Alternative Facts",
+        "title": "Alternative Facts",
         "slug": "alternative-facts",
         "url": "https://www.nonsensical.org/",
         "publication_type": PublicationType.newspaper,
@@ -52,7 +52,7 @@ def source_instance_2(source_values_2):
 
 
 @pytest.fixture
-def article_values(source_instance):
+def article_values(source_instance) -> Dict[str, Union[datetime, str]]:
     return {
         "headline": "A cow jumps over the moon",
         "slug": "a-cow-jumps-over-the-moon",
@@ -64,7 +64,7 @@ def article_values(source_instance):
 
 
 @pytest.fixture
-def article_values_m(source_values):
+def article_values_m(source_values) -> Dict[str, Union[Source, datetime, str]]:
     return {
         "headline": "A cow jumps over the moon",
         "slug": "a-cow-jumps-over-the-moon",
@@ -81,7 +81,7 @@ def article_instance(article_values):
 
 
 @pytest.fixture
-def article_values_2(source_instance):
+def article_values_2(source_instance) -> Dict[str, Union[datetime, str]]:
     return {
         "headline": "The moon is made of cheese",
         "slug": "the-moon-is-made-of-cheese",
@@ -98,5 +98,5 @@ def article_instance_2(article_values_2):
 
 
 @pytest.fixture
-def client():
+def client() -> Client:
     return Client()

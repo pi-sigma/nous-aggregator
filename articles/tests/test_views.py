@@ -9,7 +9,7 @@ TIMESPAN = 7  # no. of days
 # Test IndexView
 #
 @pytest.mark.django_db
-def test_index_view(client, source_instance, article_instance):
+def test_index_view(client, source_instance, article_instance) -> None:
     response = client.get(reverse("index"))
 
     assert response.status_code == 200
@@ -18,12 +18,12 @@ def test_index_view(client, source_instance, article_instance):
     doc = pq(html)
 
     # assert that details of source are present in response content
-    source_name = doc.find(".source-name").text()
+    source_title = doc.find(".source-title").text()
     source_link = doc.find(".source-link")
     source_link_href = source_link.attr("href")
 
 
-    assert source_name == source_instance.name
+    assert source_title == source_instance.title
     assert source_link.is_("a")
     assert source_link_href == source_instance.url
 
@@ -50,7 +50,7 @@ def test_search_results_view(
     article_values,
     article_instance,
     article_instance_2,
-):
+) -> None:
     query_params = {"q": article_values["headline"][:5]}
     response = client.get(reverse("search"), query_params)
     html = response.content.decode("utf-8")
@@ -59,11 +59,11 @@ def test_search_results_view(
     assert response.status_code == 200
 
     # assert that details of source matching query are present in response content
-    source_name = doc.find(".source-name").text()
+    source_title = doc.find(".source-title").text()
     source_link = doc.find(".source-link")
     source_link_href = source_link.attr("href")
 
-    assert source_name == source_instance.name
+    assert source_title == source_instance.title
     assert source_link.is_("a")
     assert source_link_href == source_instance.url
 
@@ -80,7 +80,7 @@ def test_search_results_view(
     assert article_instance.summary in article_link_title
 
     # assert that details of non-matching source are not found
-    assert source_instance_2.name not in html
+    assert source_instance_2.title not in html
     assert source_instance_2.url not in html
 
     # assert that details of non-matching article are not found
@@ -96,7 +96,7 @@ def test_search_result_not_found(
     source_instance_2,
     article_instance,
     article_instance_2,
-):
+) -> None:
     query_params = {"q": "test"}
     response = client.get(reverse("search"), query_params)
     html = response.content.decode("utf-8")
@@ -104,7 +104,7 @@ def test_search_result_not_found(
     assert response.status_code == 200
 
     # assert that details of non-matching source are not found
-    assert source_instance.name not in html
+    assert source_instance.title not in html
     assert source_instance.url not in html
 
     # assert that details of non-matching article are not found
@@ -119,7 +119,7 @@ def test_search_result_substring(
     source_instance,
     article_instance,
     article_values,
-):
+) -> None:
     query_params = {"q": article_values["headline"][2:7]}
     response = client.get(reverse("search"), query_params)
     html = response.content.decode("utf-8")
@@ -127,7 +127,7 @@ def test_search_result_substring(
     assert response.status_code == 200
 
     # assert that details of non-matching source are not found
-    assert source_instance.name not in html
+    assert source_instance.title not in html
     assert source_instance.url not in html
 
     # assert that details of non-matching article are not found

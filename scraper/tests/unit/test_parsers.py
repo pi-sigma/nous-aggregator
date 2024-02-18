@@ -7,13 +7,13 @@ from scraper.parser import find_headline, find_language, find_summary, parse
 
 from ..utils import read_file
 
-FILES_DIR = Path(__file__).parent.parent.resolve() / "files" / "articles" / "aj"
+FILES_DIR: Path = Path(__file__).parent.parent.resolve() / "files" / "articles" / "aj"
 
 PAGE = "indonesia"
 URL = "https://www.aljazeera.com/news/2024/2/10/big-election-rallies-in-indonesia-on-final-day-of-campaign"
 
 
-def test_find_headline(sitemap_aj, expected_aj):
+def test_find_headline(sitemap_aj, expected_aj) -> None:
     html = read_file(directory=FILES_DIR, file_name=f"{PAGE}.html")
     soup = BeautifulSoup(html, "lxml")
 
@@ -22,7 +22,7 @@ def test_find_headline(sitemap_aj, expected_aj):
     assert headline_text == expected_aj[f"{PAGE}"]["headline"]
 
 
-def test_find_summary(sitemap_aj, expected_aj):
+def test_find_summary(sitemap_aj, expected_aj) -> None:
     html = read_file(directory=FILES_DIR, file_name=f"{PAGE}.html")
     soup = BeautifulSoup(html, "lxml")
 
@@ -31,7 +31,7 @@ def test_find_summary(sitemap_aj, expected_aj):
     assert summary == expected_aj[f"{PAGE}"]["summary"]
 
 
-def test_find_language(sitemap_aj, expected_aj):
+def test_find_language(sitemap_aj, expected_aj) -> None:
     html = read_file(directory=FILES_DIR, file_name=f"{PAGE}.html")
     soup = BeautifulSoup(html, "lxml")
 
@@ -40,7 +40,7 @@ def test_find_language(sitemap_aj, expected_aj):
     assert lang == expected_aj[f"{PAGE}"]["language"]
 
 
-def test_parse(sitemap_aj, expected_aj):
+def test_parse(sitemap_aj, expected_aj) -> None:
     html = read_file(directory=FILES_DIR, file_name=f"{PAGE}.html")
 
     json_data = parse(html, sitemap_aj, url=URL)

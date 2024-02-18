@@ -6,4 +6,5 @@ bandit
 # Testing
 pyquery
 pytest
+pytest-mock
 pytest-django

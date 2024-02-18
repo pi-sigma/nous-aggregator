@@ -12,11 +12,11 @@
   <div class="row">
     {% for source in sources %}
       <div class="col-md-12 col-lg-6 col-xl-4 container-articles-outer">
-	<div><a class="source-link" href="{{ source.url }}"><h5 class="source-name">{{ source.name }}</h5></a></div>
+	<div><a class="source-link" href="{{ source.url }}"><h5 class="source-title">{{ source.title }}</h5></a></div>
 	<div class="container-articles-inner container-scrolling">
 	<ul>
 	  {% for article in article_list %}
-	    {% if article.source.name == source.name %}
+	    {% if article.source.title == source.title %}
 	    <li>
 	      <div class="article-headline">
 		<a class="article-link main-text"

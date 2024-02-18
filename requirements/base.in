@@ -1,14 +1,13 @@
 # Python
+aiohttp
 beautifulsoup4
 langdetect
-regex
-requests
-requests-html
-python-decouple
 psycopg2
+python-decouple
 pyppeteer
+pyquery
+regex
 sentry-sdk
-websockets
 
 # Django
 django

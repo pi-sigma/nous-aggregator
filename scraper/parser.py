@@ -1,12 +1,28 @@
 import json
 import logging
-from typing import Optional
+import urllib
+from typing import Generator, Optional
 
-import langdetect  # type: ignore
-from bs4 import BeautifulSoup  # type: ignore
+import langdetect
+from bs4 import BeautifulSoup
 from django.utils.text import slugify
+from pyquery import PyQuery
 
-logger = logging.getLogger(__name__)
+logger: logging.Logger = logging.getLogger(__name__)
+
+
+def generate_filtered_links(html: str, sitemap: dict) -> Generator[str, None, None]:
+    doc = PyQuery(html)
+    anchors = doc.find("a")
+
+    for anchor in anchors:
+        try:
+            link = anchor.attrib["href"]
+        except KeyError:
+            pass
+        else:
+            if sitemap["filter"].search(link):
+                yield urllib.parse.urljoin(sitemap["base_url"], link)
 
 
 def find_headline(soup: BeautifulSoup, sitemap: dict, url: str) -> Optional[str]:
@@ -29,7 +45,7 @@ def find_headline(soup: BeautifulSoup, sitemap: dict, url: str) -> Optional[str]
 def find_summary(soup: BeautifulSoup, sitemap: dict, url: str) -> Optional[str]:
     """Use `parser` & `sitemap` to extract summary from article"""
 
-    if sitemap["summary_selectors"] is None:
+    if not sitemap["summary_selectors"]:
         return None
 
     try:

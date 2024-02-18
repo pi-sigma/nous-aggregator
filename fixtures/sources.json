@@ -3,9 +3,9 @@
   "model": "articles.source",
   "pk": 1,
   "fields": {
-    "name": "Al Jazeera",
+    "title": "Al Jazeera",
 		"slug": "al-jazeera",
-    "link": "https://www.aljazeera.com/",
+    "url": "https://www.aljazeera.com/",
     "publication_type": "newspaper/journal",
     "language": "en",
     "paths": [
@@ -29,8 +29,8 @@
   "model": "articles.source",
   "pk": 2,
   "fields": {
-    "name": "Associated Press",
-    "link": "https://apnews.com/",
+    "title": "Associated Press",
+    "url": "https://apnews.com/",
     "publication_type": "newspaper/journal",
     "language": "en",
     "paths": [
@@ -46,7 +46,7 @@
     "summary_selectors": {
       "tag": "div",
       "attrs": {
-        "class": "Article"
+        "class": "RichTextStoryBody"
       }
     }
   }
@@ -55,8 +55,8 @@
   "model": "articles.source",
   "pk": 3,
   "fields": {
-    "name": "Christian Science Monitor",
-    "link": "https://www.csmonitor.com/",
+    "title": "Christian Science Monitor",
+    "url": "https://www.csmonitor.com/",
     "publication_type": "newspaper/journal",
     "language": "en",
     "paths": [
@@ -74,7 +74,7 @@
     "summary_selectors": {
       "tag": "div",
       "attrs": {
-        "id": "summary"
+        "class": "story-two"
       }
     }
   }
@@ -83,8 +83,8 @@
   "model": "articles.source",
   "pk": 4,
   "fields": {
-    "name": "Consortium News",
-    "link": "https://consortiumnews.com/",
+    "title": "Consortium News",
+    "url": "https://consortiumnews.com/",
     "publication_type": "newspaper/journal",
     "language": "en",
     "paths": [
@@ -106,8 +106,8 @@
   "model": "articles.source",
   "pk": 5,
   "fields": {
-    "name": "Current Affairs",
-    "link": "https://www.currentaffairs.org/",
+    "title": "Current Affairs",
+    "url": "https://www.currentaffairs.org/",
     "publication_type": "newspaper/journal",
     "language": "en",
     "paths": [
@@ -136,8 +136,8 @@
   "model": "articles.source",
   "pk": 6,
   "fields": {
-    "name": "New York Times",
-    "link": "https://www.nytimes.com/",
+    "title": "New York Times",
+    "url": "https://www.nytimes.com/",
     "publication_type": "newspaper/journal",
     "language": "en",
     "paths": [
@@ -155,7 +155,7 @@
     "summary_selectors": {
       "tag": "section",
       "attrs": {
-        "id": "article-summary"
+        "id": "articleBody"
       }
     }
   }
@@ -164,8 +164,8 @@
   "model": "articles.source",
   "pk": 7,
   "fields": {
-    "name": "NPR",
-    "link": "https://www.npr.org/",
+    "title": "NPR",
+    "url": "https://www.npr.org/",
     "publication_type": "newspaper/journal",
     "language": "en",
     "paths": [
@@ -184,8 +184,8 @@
   "model": "articles.source",
   "pk": 8,
   "fields": {
-    "name": "Reuters",
-    "link": "https://www.reuters.com/",
+    "title": "Reuters",
+    "url": "https://www.reuters.com/",
     "publication_type": "newspaper/journal",
     "language": "en",
     "paths": [
@@ -198,7 +198,7 @@
       "attrs": {}
     },
     "summary_selectors": {
-      "tag": "p",
+      "tag": "div",
       "attrs": {
         "data-testid": "paragraph-0"
       }
@@ -209,8 +209,8 @@
   "model": "articles.source",
   "pk": 9,
   "fields": {
-    "name": "The Atlantic",
-    "link": "https://www.theatlantic.com/",
+    "title": "The Atlantic",
+    "url": "https://www.theatlantic.com/",
     "publication_type": "newspaper/journal",
     "language": "en",
     "paths": [
@@ -227,7 +227,7 @@
     "summary_selectors": {
       "tag": "section",
       "attrs": {
-        "class": "ArticleBody_root__nZ4AR"
+        "class": "ArticleBody_root__2gF81"
       }
     }
   }
@@ -236,8 +236,8 @@
   "model": "articles.source",
   "pk": 10,
   "fields": {
-    "name": "The Intercept",
-    "link": "https://theintercept.com/",
+    "title": "The Intercept",
+    "url": "https://theintercept.com/",
     "publication_type": "newspaper/journal",
     "language": "en",
     "paths": [
@@ -261,8 +261,8 @@
   "model": "articles.source",
   "pk": 11,
   "fields": {
-    "name": "Wall Street Journal",
-    "link": "https://www.wsj.com/",
+    "title": "Wall Street Journal",
+    "url": "https://www.wsj.com/",
     "publication_type": "newspaper/journal",
     "language": "en",
     "paths": [
@@ -281,8 +281,8 @@
   "model": "articles.source",
   "pk": 12,
   "fields": {
-    "name": "UPI",
-    "link": "https://www.upi.com/",
+    "title": "UPI",
+    "url": "https://www.upi.com/",
     "publication_type": "newspaper/journal",
     "language": "en",
     "paths": [

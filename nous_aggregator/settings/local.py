@@ -1,6 +1,10 @@
 import socket
+from typing import List
 
 from .base import *
+
+hostname: str
+ips: List[str]
 
 SECRET_KEY = "hush-hush"
 
