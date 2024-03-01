@@ -1,0 +1,241 @@
+[
+{
+  "model": "articles.source",
+  "pk": 1,
+  "fields": {
+    "title": "Al Jazeera",
+	"slug": "al-jazeera",
+    "url": "https://www.aljazeera.com/",
+    "publication_type": "newspaper/journal",
+    "language": "en",
+    "paths": [
+      "news/"
+    ],
+    "javascript_required": false,
+    "regex": "(?<!liveblog)/[0-9]{4}/[0-9]+/[0-9]+/(?!.*terms-and-conditions/|.*community-rules-guidelines/|.*eu-eea-regulatory|.*code-of-ethics)",
+    "headline_search_params_find": ["h1"],
+    "headline_search_params_remove": [],
+    "summary_search_params_find": [".p1", "p"],
+    "summary_search_params_remove": []
+  }
+},
+{
+  "model": "articles.source",
+  "pk": 2,
+  "fields": {
+    "title": "Associated Press",
+    "url": "https://apnews.com/",
+    "publication_type": "newspaper/journal",
+    "language": "en",
+    "paths": [
+      "hub/world-news/",
+      "hub/business/"
+    ],
+    "javascript_required": false,
+    "regex": "article/",
+    "headline_search_params_find": [".Page-headline"],
+    "headline_search_params_remove": [],
+    "summary_search_params_find": [".RichTextBody"],
+    "summary_search_params_remove": []
+  }
+},
+{
+  "model": "articles.source",
+  "pk": 3,
+  "fields": {
+    "url": "https://www.csmonitor.com/",
+    "title": "Christian Science Monitor",
+    "publication_type": "newspaper/journal",
+    "language": "en",
+    "paths": [
+      "world/",
+      "USA/"
+    ],
+    "javascript_required": false,
+    "regex": "USA/.*[0-9]{4}/[0-9]{4}/|World/.*[0-9]{4}/[0-9]{4}/",
+    "headline_search_params_find": ["h1"],
+    "headline_search_params_remove": [],
+    "summary_search_params_find": ["div > .story-two"],
+    "summary_search_params_remove": ["aside", "div"]
+  }
+},
+{
+  "model": "articles.source",
+  "pk": 4,
+  "fields": {
+    "title": "Consortium News",
+    "url": "https://consortiumnews.com/",
+    "publication_type": "newspaper/journal",
+    "language": "en",
+    "paths": [
+      ""
+    ],
+    "javascript_required": false,
+    "regex": "[0-9]{4}/[0-9]{2}/[0-9]{2}/(?!.*contact-us-form/|.*parry-awarded|.*robert-parrys-legacy)[a-z]+(?!.*policy)(?!.*live)(?!.*fund-drive)",
+    "headline_search_params_find": ["h1"],
+    "headline_search_params_remove": [],
+    "summary_search_params_find": [".entry-content"],
+    "summary_search_params_remove": ["div"]
+  }
+},
+{
+  "model": "articles.source",
+  "pk": 5,
+  "fields": {
+    "title": "Current Affairs",
+    "url": "https://www.currentaffairs.org/",
+    "publication_type": "newspaper/journal",
+    "language": "en",
+    "paths": [
+      "category/politics/",
+      "category/economics/",
+      "category/interviews/",
+      "category/history/"
+    ],
+    "javascript_required": false,
+    "regex": "[0-9]{4}/[0-9]{2}/",
+    "headline_search_params_find": [".title > span"],
+    "headline_search_params_remove": [],
+    "summary_search_params_find": [".details .tagline"],
+    "summary_search_params_remove": []
+  }
+},
+{
+  "model": "articles.source",
+  "pk": 6,
+  "fields": {
+    "title": "New York Times",
+    "url": "https://www.nytimes.com/",
+    "publication_type": "newspaper/journal",
+    "language": "en",
+    "paths": [
+      "section/world/",
+      "section/business/"
+    ],
+    "javascript_required": false,
+    "regex": "(?<!/es/)(?<!/live/)[0-9]{4}/[0-9]{2}/[0-9]{2}/",
+    "headline_search_params_find": ["h1"],
+    "headline_search_params_remove": [],
+    "summary_search_params_find": "[name='articleBody']",
+    "summary_search_params_remove": ["figure", "span"]
+  }
+},
+{
+  "model": "articles.source",
+  "pk": 7,
+  "fields": {
+    "title": "NPR",
+    "url": "https://www.npr.org/",
+    "publication_type": "newspaper/journal",
+    "language": "en",
+    "paths": [
+      "sections/world/"
+    ],
+    "javascript_required": false,
+    "regex": "/[0-9]{4}/[0-9]{2}/[0-9]{2}/",
+    "headline_search_params_find": ["h1"],
+    "headline_search_params_remove": [],
+    "summary_search_params_find": ["#storytext"],
+    "summary_search_params_remove": ["div"]
+  }
+},
+{
+  "model": "articles.source",
+  "pk": 8,
+  "fields": {
+    "title": "Reuters",
+    "url": "https://www.reuters.com/",
+    "publication_type": "newspaper/journal",
+    "language": "en",
+    "paths": [
+      "world/"
+    ],
+    "javascript_required": true,
+    "regex": "[0-9]{4}-[0-9]{2}-[0-9]{2}/$",
+    "headline_search_params_find": ["h1"],
+    "headline_search_params_remove": [],
+    "summary_search_params_find": ["[class*='article-body__paragraph']"],
+    "summary_search_params_remove": []
+  }
+},
+{
+  "model": "articles.source",
+  "pk": 9,
+  "fields": {
+    "title": "The Atlantic",
+    "url": "https://www.theatlantic.com/",
+    "publication_type": "newspaper/journal",
+    "language": "en",
+    "paths": [
+      "international/",
+      "politics/",
+      "business/"
+    ],
+    "javascript_required": false,
+    "regex": "archive/[0-9]{4}/",
+    "headline_search_params_find": ["h1"],
+    "headline_search_params_remove": [],
+    "summary_search_params_find": ["[class*='ArticleBody']"],
+    "summary_search_params_remove": []
+  }
+},
+{
+  "model": "articles.source",
+  "pk": 10,
+  "fields": {
+    "title": "The Intercept",
+    "url": "https://theintercept.com/",
+    "publication_type": "newspaper/journal",
+    "language": "en",
+    "paths": [
+      "politics/",
+      "justice/",
+      "world/"
+    ],
+    "javascript_required": false,
+    "regex": "[0-9]{4}/[0-9]{2}/[0-9]{2}",
+    "headline_search_params_find": ["h1"],
+    "headline_search_params_remove": [],
+    "summary_search_params_find": [".post__excerpt"],
+    "summary_search_params_remove": []
+  }
+},
+{
+  "model": "articles.source",
+  "pk": 11,
+  "fields": {
+    "title": "UPI",
+    "url": "https://www.upi.com/",
+    "publication_type": "newspaper/journal",
+    "language": "en",
+    "paths": [
+      "Top_News/World-News/"
+    ],
+    "javascript_required": false,
+    "regex": "[0-9]{4}/[0-9]{2}/[0-9]{2}/",
+    "headline_search_params_find": ["h1"],
+    "headline_search_params_remove": [],
+    "summary_search_params_find": ["article"],
+    "summary_search_params_remove": []
+  }
+},
+{
+  "model": "articles.source",
+  "pk": 12,
+  "fields": {
+    "title": "Wall Street Journal",
+    "url": "https://www.wsj.com/",
+    "publication_type": "newspaper/journal",
+    "language": "en",
+    "paths": [
+      "news/world/"
+    ],
+    "javascript_required": false,
+    "regex": "articles/(?!.*comments_sector)",
+    "headline_search_params_find": ["h1"],
+    "headline_search_params_remove": [],
+    "summary_search_params_find": ["h2"],
+    "summary_search_params_remove": []
+  }
+}
+]

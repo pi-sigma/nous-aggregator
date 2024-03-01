@@ -90,7 +90,7 @@ WSGI_APPLICATION = "nous_aggregator.wsgi.application"
 # Logging
 
 LOG_DIR: Path = BASE_DIR / "logs"
-LOGGING: Dict[str, Union[Dict[str, Dict[str, str]], Dict[str, Dict[str, Union[List[str], bool, str]]], Dict[str, Dict[str, Union[int, str]]], int]] = {
+LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {
@@ -185,7 +185,7 @@ REQUESTS_TIMEOUT = 30
 # Celery
 CELERY_BROKER_URL = config("CELERY_BROKER_URL", "redis://localhost:6379")
 CELERY_RESULT_BACKEND = config("CELERY_RESULT_BACKEND", "redis://localhost:6379")
-CELERY_BEAT_SCHEDULE: Dict[str, Dict[str, Union[Dict[str, str], List[str], int, str]]] = {
+CELERY_BEAT_SCHEDULE = {
     "get_articles_en": {
         "task": "articles.tasks.get_articles",
         "schedule": scraper_tasks.magazines["en"]["schedule"],

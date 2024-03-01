@@ -1,6 +1,12 @@
-class MockResponse:
-    def __init__(self, status_code: int | None = None, text: str = ""):
-        self.status_code = status_code or 200
+from typing import Optional
+
+
+class AsyncMockResponse:
+    """
+    Mock response for use with async context manager
+    """
+    def __init__(self, status_code: Optional[int] = 200, text: str = ""):
+        self.status_code = status_code
         self._text = text
 
     async def text(self):
@@ -9,5 +15,5 @@ class MockResponse:
     async def __aenter__(self):
         return self
 
-    async def __aexit__(self, exc_type, exc, tb):
+    async def __aexit__(self, exc_type, exc_value, exc_traceback):
         pass

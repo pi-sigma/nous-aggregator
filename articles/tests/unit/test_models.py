@@ -1,10 +1,10 @@
 import regex  # type: ignore
 
-from ..models import Article, Source
+from articles.models import Article, Source
 
 
 #
-# Test Source
+# Source
 #
 def test_create_source(source_values) -> None:
     source = Source(**source_values)
@@ -18,8 +18,6 @@ def test_source_to_dict(source_values) -> None:
     sitemap = source.to_dict()
 
     for attr_name in [
-        "summary_selectors",
-        "headline_selectors",
         "javascript_required",
         "language",
         "paths",
@@ -28,6 +26,10 @@ def test_source_to_dict(source_values) -> None:
 
     assert source.url == sitemap["base_url"]
     assert regex.compile(source.regex) == sitemap["filter"]
+    assert sitemap["search_params"]["headline"]["find"] == source.headline_search_params_find
+    assert sitemap["search_params"]["headline"]["remove"] == source.headline_search_params_remove
+    assert sitemap["search_params"]["summary"]["find"] == source.summary_search_params_find
+    assert sitemap["search_params"]["summary"]["remove"] == source.summary_search_params_remove
 
 
 def test_source_str_representation(source_values) -> None:
@@ -37,7 +39,7 @@ def test_source_str_representation(source_values) -> None:
 
 
 #
-# Test Article
+# Article
 #
 def test_create_article(article_values_m) -> None:
     article = Article(**article_values_m)

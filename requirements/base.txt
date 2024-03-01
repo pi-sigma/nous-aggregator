@@ -16,8 +16,6 @@ asgiref==3.7.2
     # via django
 attrs==23.2.0
     # via aiohttp
-beautifulsoup4==4.12.2
-    # via -r requirements/base.in
 billiard==4.2.0
     # via celery
 celery==5.3.6
@@ -97,8 +95,6 @@ six==1.16.0
     # via
     #   langdetect
     #   python-dateutil
-soupsieve==2.5
-    # via beautifulsoup4
 sqlparse==0.4.4
     # via django
 tqdm==4.66.1

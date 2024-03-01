@@ -8,7 +8,7 @@ from aiohttp.web_exceptions import HTTPError
 
 from scraper.spiders import Spider
 
-from ..mocks import MockResponse
+from ..mocks import AsyncMockResponse
 from ..utils import read_file
 
 FILES_DIR: Path = Path(__file__).parent.parent.resolve() / "files" / "articles" / "aj"
@@ -35,7 +35,7 @@ async def test_collect_links(starting_urls_aj, sitemap_aj, mocker):
     spider = Spider(starting_urls_aj, sitemap_aj)
     html = read_file(directory=FILES_DIR, file_name="_start.html")
 
-    mock_response = MockResponse(status_code=200, text=html)
+    mock_response = AsyncMockResponse(status_code=200, text=html)
     mocker.patch("aiohttp.ClientSession.get", return_value=mock_response)
 
     async with aiohttp.ClientSession() as session:
@@ -48,9 +48,7 @@ async def test_collect_links(starting_urls_aj, sitemap_aj, mocker):
 async def test_collect_metadata(
     starting_urls_aj, sitemap_aj, expected_aj, mocker
 ) -> None:
-    #
     # setup
-    #
     spider = Spider(starting_urls_aj, sitemap_aj)
     spider.links = {"https://indonesia.com", "https://taiwan.com"}
 
@@ -58,8 +56,8 @@ async def test_collect_metadata(
     html_taiwan = read_file(directory=FILES_DIR, file_name="taiwan.html")
 
     def return_value(*args, **kwargs):
-        mock_response1 = MockResponse(status_code=200, text=html_indonesia)
-        mock_response2 = MockResponse(status_code=200, text=html_taiwan)
+        mock_response1 = AsyncMockResponse(text=html_indonesia)
+        mock_response2 = AsyncMockResponse(text=html_taiwan)
 
         if args[0] == "https://indonesia.com":
             return mock_response1
@@ -68,10 +66,9 @@ async def test_collect_metadata(
 
     mocker.patch("aiohttp.ClientSession.get", side_effect=return_value)
 
-    #
     # asserts
-    #
-    await spider.collect_metadata(aiohttp.ClientSession(), spider.links)
+    async with aiohttp.ClientSession() as session:
+        await spider.collect_metadata(session, spider.links)
 
     articles = [json.loads(article) for article in spider.articles]
 

@@ -1,9 +1,0 @@
-[
-{
-  "model": "articles.language",
-  "pk": 1,
-  "fields": {
-    "name": "en"
-  }
-}
-]

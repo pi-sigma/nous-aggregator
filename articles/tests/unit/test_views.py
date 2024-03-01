@@ -22,7 +22,6 @@ def test_index_view(client, source_instance, article_instance) -> None:
     source_link = doc.find(".source-link")
     source_link_href = source_link.attr("href")
 
-
     assert source_title == source_instance.title
     assert source_link.is_("a")
     assert source_link_href == source_instance.url

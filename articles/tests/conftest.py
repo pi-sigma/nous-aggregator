@@ -20,8 +20,10 @@ def source_values():
         "paths": ["world/"],
         "javascript_required": False,
         "regex": "[0-9]{4}/[0-9]{2}/[0-9]{2}",
-        "headline_selectors": {"tag": "h1", "attrs": {}},
-        "summary_selectors": {"tag": "h2", "attrs": {}},
+        "headline_search_params_find": "h1",
+        "headline_search_params_remove": [],
+        "summary_search_params_find": "",
+        "summary_search_params_remove": []
     }
 
 
@@ -41,8 +43,10 @@ def source_values_2():
         "paths": ["world/"],
         "javascript_required": False,
         "regex": "[0-9]{4}/[0-9]{2}/[0-9]{2}",
-        "headline_selectors": {"tag": "h1", "attrs": {}},
-        "summary_selectors": {"tag": "h2", "attrs": {}},
+        "headline_search_params_find": "h1",
+        "headline_search_params_remove": [],
+        "summary_search_params_find": "",
+        "summary_search_params_remove": []
     }
 
 

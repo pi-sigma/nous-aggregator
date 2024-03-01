@@ -1,5 +1,4 @@
 import regex
-from django.core.validators import URLValidator
 from django.db import models
 from django.db.models.functions import Lower
 from django.utils.translation import gettext_lazy as _
@@ -14,14 +13,13 @@ class Article(models.Model):
     Fields:
         headline (models.TextField): headline of the article
         slug (models.SlugField): slug of the article (generated from headline)
+        summary (models.TextField): short paragraph summarizing the article
         created_at (models.DateTimeField): date the article was added to the
             database. Mostly corresponds to actual publication date, though
             this can vary. Actual dates are not used because their format
             varies a lot, hence they are difficult to parse.
         language (models.CharField): the language of the article
         url (models.URLField): link to the article
-        body (models.TextField): either the actual body of the article,
-            or a short desriptive paragraph
 
     Relations:
         source (ForeignKey): the source of the article
@@ -31,12 +29,16 @@ class Article(models.Model):
     """
 
     headline = models.CharField(
-        max_length=200,
+        max_length=512,
         help_text=_("The headline of the article"),
     )
     slug = models.SlugField(
-        max_length=255,
+        max_length=1024,
         help_text=_("The slug of the article for SEO-friendly urls"),
+    )
+    summary = models.TextField(
+        blank=True,
+        help_text=_("A summary of the article"),
     )
     created_at = models.DateTimeField()
     language = models.CharField(
@@ -46,13 +48,9 @@ class Article(models.Model):
         help_text=_("The language of the article"),
     )
     url = models.URLField(
-        max_length=255,
+        max_length=512,
         unique=True,
         help_text=_("The link to the article"),
-    )
-    summary = models.TextField(
-        blank=True,
-        help_text=_("A summary of the article"),
     )
     source = models.ForeignKey(
         to="Source",
@@ -65,7 +63,7 @@ class Article(models.Model):
         ordering = ("-created_at",)
         indexes = [models.Index(fields=["headline", "url"])]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.source}: {self.headline}"
 
 
@@ -74,7 +72,7 @@ class Source(models.Model):
     Metadata about the source of articles
 
     Fields:
-        title (models.CharField): name of the source
+        title (models.CharField): name/title of the source
         slug (models.SlugField): slug of the source
         publication_type (models.CharField): the type of publication of the
             source (newspaper, journal, blog...)
@@ -122,15 +120,15 @@ class Source(models.Model):
     )
     url = models.URLField(
         unique=True,
-        max_length=255,
+        max_length=512,
         help_text=_("The url of the source"),
     )
     #
-    # info related to scraping
+    # data related to scraping
     #
     paths = models.JSONField(
         help_text=_(
-            "A list of resource paths where the scraper will look for articles"
+            "List of resource paths where the scraper will look for articles"
         ),
     )
     regex = models.CharField(
@@ -147,18 +145,26 @@ class Source(models.Model):
             "of JavaScript"
         ),
     )
-    headline_selectors = models.JSONField(
+    headline_search_params_find = models.JSONField(
         help_text=_(
-            "Information about the structure of the target page needed to extract "
-            "the headline of articles published by this source"
+            "Selectors for extracting the headline of articles"
         ),
     )
-    summary_selectors = models.JSONField(
-        null=True,
-        blank=True,
+    headline_search_params_remove = models.JSONField(
         help_text=_(
-            "Information about the structure of the target page needed to extract "
-            "the summary of articles published by this source"
+            "Selectors for HTML elements that need to be removed from the headline"
+        ),
+    )
+    summary_search_params_find = models.JSONField(
+        default=str,
+        help_text=_(
+            "Selectors for extracting the summary of articles"
+        ),
+    )
+    summary_search_params_remove = models.JSONField(
+        default=list,
+        help_text=_(
+            "Selectors for HTML elements that need to be removed from the summary"
         ),
     )
 
@@ -167,7 +173,7 @@ class Source(models.Model):
             Lower("title"),
         ]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.title}"
 
     def to_dict(self):
@@ -177,7 +183,15 @@ class Source(models.Model):
             "language": self.language,
             "javascript_required": self.javascript_required,
             "filter": regex.compile(self.regex),
-            "headline_selectors": self.headline_selectors,
-            "summary_selectors": self.summary_selectors,
+            "search_params": {
+                "headline": {
+                    "find": self.headline_search_params_find,
+                    "remove": self.headline_search_params_remove,
+                },
+                "summary": {
+                    "find": self.summary_search_params_find,
+                    "remove": self.summary_search_params_remove,
+                },
+            },
         }
         return sitemap

@@ -1,6 +1,5 @@
 import json
 from pathlib import Path
-from typing import Any, Dict
 
 import pytest
 from django.utils.text import slugify
@@ -9,7 +8,7 @@ from articles.constants import Language, PublicationType
 from articles.models import Source
 from scraper.spiders import Spider
 
-from ..mocks import MockResponse
+from ..mocks import AsyncMockResponse
 from ..utils import read_file
 
 FILES_DIR: Path = Path(__file__).parent.parent.resolve() / "files" / "articles" / "aj"
@@ -29,25 +28,27 @@ def source():
         paths=["news/"],
         regex="(?<!liveblog)/[0-9]{4}/[0-9]+/[0-9]+/(?!.*terms-and-conditions/|.*community-rules-guidelines/|.*eu-eea-regulatory|.*code-of-ethics|.*liveblog)",
         javascript_required=False,
-        headline_selectors={'tag': 'h1', 'attrs': {}},
-        summary_selectors={'tag': 'p', 'attrs': {'class': 'article__subhead'}},
+        headline_search_params_find=["h1"],
+        headline_search_params_remove=[],
+        summary_search_params_find=[".p1", "p"],
+        summary_search_params_remove=[]
     )
 
 
 @pytest.fixture
-def contents() -> Dict[str, Dict[str, Any]]:
+def contents_aj():
     contents = {
         "_start": {
             "link": "https://www.aljazeera.com/news/",
             "content": read_file(directory=FILES_DIR, file_name="_start.html"),
         },
         "asian_cup": {
-            "link":  "https://www.aljazeera.com/news/2024/2/10/football-fever-hits-"
-                     "jordan-ahead-of-historic-asian-cup-final",
+            "link": "https://www.aljazeera.com/sports/2024/2/10/football-fans-souq-waqif",
             "content": read_file(directory=FILES_DIR, file_name="asian_cup.html"),
         },
         "football": {
-            "link": "https://www.aljazeera.com/sports/2024/2/10/football-fans-souq-waqif",
+            "link":  "https://www.aljazeera.com/news/2024/2/10/football-fever-hits-"
+                     "jordan-ahead-of-historic-asian-cup-final",
             "content": read_file(directory=FILES_DIR, file_name="football.html"),
         },
         "footprints": {
@@ -108,20 +109,16 @@ def contents() -> Dict[str, Dict[str, Any]]:
 # tests
 #
 @pytest.mark.django_db
-def test_run_spider(source, contents, expected_aj, mocker) -> None:
-    #
+def test_run_spider(source, contents_aj, expected_aj, mocker) -> None:
     # setup
-    #
     def return_value(*args, **kwargs):
-        for k, v in contents.items():
-            if args[0] == v["link"]:
-                return MockResponse(text=v["content"])
+        for key, value in contents_aj.items():
+            if args[0] == value["link"]:
+                return AsyncMockResponse(text=value["content"])
 
     mocker.patch("aiohttp.ClientSession.get", side_effect=return_value)
 
-    #
     # asserts
-    #
     sitemap = source.to_dict()
     starting_urls = [
         sitemap["base_url"] + path for path in sitemap["paths"]
