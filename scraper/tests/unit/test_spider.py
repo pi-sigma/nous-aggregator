@@ -71,7 +71,8 @@ async def test_collect_metadata(
     #
     # asserts
     #
-    await spider.collect_metadata(aiohttp.ClientSession(), spider.links)
+    async with aiohttp.ClientSession() as session:
+        await spider.collect_metadata(session, spider.links)
 
     articles = [json.loads(article) for article in spider.articles]
 

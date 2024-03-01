@@ -1,7 +1,8 @@
 -c ci.txt
 
+pip-tools
+
 # Code quality
-bandit
 black
 flake8
 isort
@@ -9,9 +10,12 @@ isort
 # Debug tooling
 django-debug-toolbar
 django-extensions
+ipython
+pdbr
 
 # Typing
 django-stubs
 mypy
 pytype
 types-requests
+types-regex

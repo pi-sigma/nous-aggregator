@@ -1,12 +1,16 @@
 import json
+import logging
 
 from celery import group, shared_task
+from django.db.utils import DatabaseError
 from django.utils import timezone
 
 import scraper
 from scraper.tasks import magazines
 
 from .models import Article, Source
+
+logger = logging.getLogger("__name__")
 
 
 @shared_task
@@ -21,17 +25,34 @@ def get_articles_for_source(source_title: str) -> None:
     spider.run()
     articles = [json.loads(article) for article in spider.articles]
 
-    Article.objects.bulk_create([
-        Article(
-            headline=article_data["headline"],
-            slug=article_data["slug"],
-            source=Source.objects.get(url=article_data["source_link"]),
-            summary=article_data["summary"],
-            language=article_data["language"],
-            url=article_data["url"],
-            created_at=timezone.now(),
-        ) for article_data in articles
-    ], ignore_conflicts=True)
+    # try bulk create, revert to individual db saves in case of error
+    try:
+        Article.objects.bulk_create([
+            Article(
+                headline=article_data["headline"],
+                slug=article_data["slug"],
+                source=Source.objects.get(url=article_data["source_link"]),
+                summary=article_data["summary"],
+                language=article_data["language"],
+                url=article_data["url"],
+                created_at=timezone.now(),
+            ) for article_data in articles
+        ], ignore_conflicts=True)
+    except DatabaseError as exc:
+        logger.error("Bulk create failed", exc_info=exc)
+        for article_data in articles:
+            try:
+                Article.objects.create(
+                    headline=article_data["headline"],
+                    slug=article_data["slug"],
+                    source=Source.objects.get(url=article_data["source_link"]),
+                    summary=article_data["summary"],
+                    language=article_data["language"],
+                    url=article_data["url"],
+                    created_at=timezone.now(),
+                )
+            except DatabaseError as exc:
+                logger.error("DB save failed for %s", article_data["url"], exc_info=exc)
 
 
 @shared_task

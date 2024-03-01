@@ -4,7 +4,8 @@
 bandit
 
 # Testing
-pyquery
 pytest
-pytest-mock
+pytest-asyncio
+pytest-celery
 pytest-django
+pytest-mock

@@ -15,9 +15,6 @@ RUN pip install pip -U
 COPY /requirements/* /app/requirements/
 RUN pip install -r /app/requirements/dev.txt
 
-# pyppeteer deps (https://stackoverflow.com/a/71935536)
-# RUN xargs apt-get install -y --no-install-recommends < /app/requirements/pyppeteer_deps.txt
-
 
 #
 # Final

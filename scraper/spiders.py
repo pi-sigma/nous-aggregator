@@ -2,7 +2,7 @@ import asyncio
 import logging
 import random
 
-import aiohttp  # pyre-ignore
+import aiohttp
 from aiohttp import ClientSession
 from aiohttp.web_exceptions import HTTPError
 
@@ -33,7 +33,7 @@ class Spider:
         self.links: set[str] = set()
         self.articles: set[str] = set()
 
-    async def connect(self, session: ClientSession, url: str) -> str | None:  # pyre-ignore
+    async def connect(self, session: ClientSession, url: str) -> str | None:
         headers = random.choice(self.headers)
 
         try:
@@ -44,7 +44,7 @@ class Spider:
             return None
         return html
 
-    async def get_links(self, session: ClientSession, url: str) -> list[str] | None:
+    async def get_links(self, session: ClientSession, url: str) -> None:
         html = await self.connect(session=session, url=url)
         if not html:
             return None
@@ -52,7 +52,9 @@ class Spider:
         for link in parser.generate_filtered_links(html=html, sitemap=self.sitemap):
             self.links.add(link)
 
-    async def scrape(self, session: ClientSession, link: str) -> str | None:
+        return None
+
+    async def scrape(self, session: ClientSession, link: str) -> None:
         html = await self.connect(session=session, url=link)
         if not html:
             return None
@@ -62,6 +64,8 @@ class Spider:
             return None
 
         self.articles.add(article)
+
+        return None
 
     async def collect_links(self, session: ClientSession, starting_urls: list[str]) -> None:
         coros = (self.get_links(session, url) for url in starting_urls)
@@ -78,6 +82,10 @@ class Spider:
             await self.collect_links(session, self.starting_urls)
             await self.collect_metadata(session, self.links)
 
-    def run(self):
-        loop = asyncio.get_event_loop()
+    def run(self) -> None:
+        try:
+            loop = asyncio.get_event_loop()
+        except RuntimeError:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
         loop.run_until_complete(self.main())

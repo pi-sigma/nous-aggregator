@@ -1,9 +1,0 @@
-[
-{
-  "model": "articles.publicationtype",
-  "pk": 1,
-  "fields": {
-    "name": "newspaper/journal"
-  }
-}
-]
