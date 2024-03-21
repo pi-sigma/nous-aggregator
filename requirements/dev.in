@@ -7,7 +7,7 @@ black
 flake8
 isort
 
-# Debug tooling
+# Development & debug tooling
 django-debug-toolbar
 django-extensions
 ipython

@@ -6,7 +6,7 @@ from django.db.utils import DatabaseError
 from django.utils import timezone
 
 import scraper
-from scraper.tasks import magazines
+from config.scraper import tasks as scraper_tasks
 
 from .models import Article, Source
 
@@ -58,7 +58,7 @@ def get_articles_for_source(source_title: str) -> None:
 @shared_task
 def get_articles(language: str):
     task_group = group(
-        get_articles_for_source.s(source_title=title) for title in magazines[language]["titles"]
+        get_articles_for_source.s(source_title=title) for title in scraper_tasks["magazines"][language]["titles"]
     )
     promise = task_group.apply_async()
     if promise.ready():

@@ -12,7 +12,7 @@ release:
   image: web
 
 run:
-  web: gunicorn nous_aggregator.wsgi
+  web: gunicorn config.wsgi
   worker:
     command:
       - python manage.py scrape

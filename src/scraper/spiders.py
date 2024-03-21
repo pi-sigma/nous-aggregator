@@ -34,7 +34,7 @@ class Spider:
         self.articles: set[str] = set()
 
     async def connect(self, session: ClientSession, url: str) -> str | None:
-        headers = random.choice(self.headers)
+        headers = random.choice(self.headers)  # nosec
 
         try:
             async with session.get(url, headers=headers) as response:

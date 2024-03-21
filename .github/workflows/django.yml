@@ -19,7 +19,8 @@ jobs:
           pip install -r requirements/ci.txt
       - name: Run Bandit
         run: |
-          bandit -r articles/ -x tests
+          bandit -r src/articles/ -x tests
+          bandit -r src/scraper/ -x tests
   #
   # Tests
   #
@@ -58,9 +59,9 @@ jobs:
           DJANGO_ENV: BASE
           SECURE_SSL_REDIRECT: False
         run: |
-          pytest articles/tests/unit/
-          pytest articles/tests/integration/
-          pytest scraper/tests/
+          pytest src/articles/tests/unit/
+          pytest src/articles/tests/integration/
+          pytest src/scraper/tests/
 
   #
   # Migrations

@@ -1,14 +1,17 @@
 import os
+import sys
 from pathlib import Path
-from typing import Any, Dict, List, Union
+from typing import Any, Dict
 
 from decouple import Csv, config
 
-from scraper import tasks as scraper_tasks
+from .. import scraper
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-# (modified because settings files are nested one level deeper)
-BASE_DIR: Path = Path(__file__).resolve().parent.parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+
+# Add "src" to Python path
+PROJECT_DIR = os.path.join(BASE_DIR, "src")
+sys.path.insert(0, PROJECT_DIR)
 
 SECRET_KEY = config("SECRET_KEY", default="")
 
@@ -62,7 +65,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "nous_aggregator.urls"
+ROOT_URLCONF = "config.urls"
 
 INTERNAL_IPS = [
     "127.0.0.1",
@@ -84,7 +87,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "nous_aggregator.wsgi.application"
+WSGI_APPLICATION = "config.wsgi.application"
 
 
 # Logging
@@ -169,9 +172,8 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
-
-STATIC_URL = "static/"
-STATIC_ROOT: str = os.path.join(BASE_DIR, 'static')
+STATIC_URL: str = "static/"
+STATIC_ROOT: str = f"{PROJECT_DIR}/staticfiles"
 
 
 # Default primary key field type
@@ -188,7 +190,7 @@ CELERY_RESULT_BACKEND = config("CELERY_RESULT_BACKEND", "redis://localhost:6379"
 CELERY_BEAT_SCHEDULE = {
     "get_articles_en": {
         "task": "articles.tasks.get_articles",
-        "schedule": scraper_tasks.magazines["en"]["schedule"],
+        "schedule": scraper.tasks["magazines"]["en"]["schedule"],
         "kwargs": {
             "language": "en",
         }

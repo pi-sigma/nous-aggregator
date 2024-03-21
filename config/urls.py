@@ -1,4 +1,4 @@
-"""nous_aggregator URL Configuration
+"""nous-aggregator URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/4.0/topics/http/urls/
@@ -15,7 +15,7 @@ Including another URLconf
 """
 from typing import List
 
-from django.conf import settings
+from decouple import config
 from django.contrib import admin
 from django.urls import include, path
 from django.urls.resolvers import URLResolver
@@ -28,7 +28,7 @@ urlpatterns: List[URLResolver] = [
 ]
 
 
-if settings.DEBUG is True:
+if config("DJANGO_ENV") == "LOCAL":
     urlpatterns += [
         path('__debug__/', include('debug_toolbar.urls')),
     ]

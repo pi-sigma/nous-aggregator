@@ -1,0 +1,3 @@
+static/* linguist-vendored
+tests/* linguist-vendored
+*.html linguist-detectable=false
