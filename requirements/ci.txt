@@ -79,18 +79,7 @@ cssselect==1.2.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   pyquery
-dj-database-url==2.1.0
-    # via
-    #   -c requirements/base.txt
-    #   -r requirements/base.txt
-    #   django-on-heroku
 django==5.0.1
-    # via
-    #   -c requirements/base.txt
-    #   -r requirements/base.txt
-    #   dj-database-url
-    #   django-on-heroku
-django-on-heroku==1.1.2
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -163,11 +152,6 @@ psycopg2==2.9.9
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-psycopg2-binary==2.9.7
-    # via
-    #   -c requirements/base.txt
-    #   -r requirements/base.txt
-    #   django-on-heroku
 pyee==8.2.2
     # via
     #   -c requirements/base.txt
@@ -242,11 +226,6 @@ tqdm==4.66.1
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   pyppeteer
-typing-extensions==4.7.1
-    # via
-    #   -c requirements/base.txt
-    #   -r requirements/base.txt
-    #   dj-database-url
 tzdata==2023.4
     # via
     #   -c requirements/base.txt
@@ -275,11 +254,6 @@ websockets==10.4
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   pyppeteer
-whitenoise==6.5.0
-    # via
-    #   -c requirements/base.txt
-    #   -r requirements/base.txt
-    #   django-on-heroku
 yarl==1.9.4
     # via
     #   -c requirements/base.txt

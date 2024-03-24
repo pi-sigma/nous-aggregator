@@ -38,14 +38,7 @@ click-repl==0.3.0
     # via celery
 cssselect==1.2.0
     # via pyquery
-dj-database-url==2.1.0
-    # via django-on-heroku
 django==5.0.1
-    # via
-    #   -r requirements/base.in
-    #   dj-database-url
-    #   django-on-heroku
-django-on-heroku==1.1.2
     # via -r requirements/base.in
 frozenlist==1.4.1
     # via
@@ -73,8 +66,6 @@ prompt-toolkit==3.0.43
     # via click-repl
 psycopg2==2.9.9
     # via -r requirements/base.in
-psycopg2-binary==2.9.7
-    # via django-on-heroku
 pyee==8.2.2
     # via pyppeteer
 pyppeteer==1.0.2
@@ -99,8 +90,6 @@ sqlparse==0.4.4
     # via django
 tqdm==4.66.1
     # via pyppeteer
-typing-extensions==4.7.1
-    # via dj-database-url
 tzdata==2023.4
     # via celery
 urllib3==1.26.18
@@ -116,8 +105,6 @@ wcwidth==0.2.13
     # via prompt-toolkit
 websockets==10.4
     # via pyppeteer
-whitenoise==6.5.0
-    # via django-on-heroku
 yarl==1.9.4
     # via aiohttp
 zipp==3.16.2

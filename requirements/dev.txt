@@ -92,29 +92,18 @@ cssselect==1.2.0
     #   pyquery
 decorator==5.1.1
     # via ipython
-dj-database-url==2.1.0
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
-    #   django-on-heroku
 django==5.0.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-    #   dj-database-url
     #   django-debug-toolbar
     #   django-extensions
-    #   django-on-heroku
     #   django-stubs
     #   django-stubs-ext
 django-debug-toolbar==4.2.0
     # via -r requirements/dev.in
 django-extensions==3.2.3
     # via -r requirements/dev.in
-django-on-heroku==1.1.2
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
 django-stubs==4.2.4
     # via -r requirements/dev.in
 django-stubs-ext==4.2.2
@@ -261,11 +250,6 @@ psycopg2==2.9.9
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-psycopg2-binary==2.9.7
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
-    #   django-on-heroku
 ptyprocess==0.7.0
     # via pexpect
 pure-eval==0.2.2
@@ -411,9 +395,6 @@ types-urllib3==1.26.25.14
     # via types-requests
 typing-extensions==4.7.1
     # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
-    #   dj-database-url
     #   django-stubs
     #   django-stubs-ext
     #   libcst
@@ -452,11 +433,6 @@ websockets==10.4
     #   pyppeteer
 wheel==0.42.0
     # via pip-tools
-whitenoise==6.5.0
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
-    #   django-on-heroku
 yarl==1.9.4
     # via
     #   -c requirements/ci.txt

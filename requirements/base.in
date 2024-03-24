@@ -10,7 +10,6 @@ sentry-sdk
 
 # Django
 django
-django-on-heroku
 
 # Other
 gunicorn
