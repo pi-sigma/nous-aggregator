@@ -11,7 +11,6 @@ media
 staticfiles/
 dev/
 logs/*.log*
-static/
 
 ### celery etc.
 celerybeat-schedule
