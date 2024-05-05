@@ -34,6 +34,7 @@ def find_headline(doc: PyQuery, sitemap: dict, url: str) -> Optional[str]:
         logger.warning("No search params for headline of %s", url)
         return None
 
+    # TODO: error handling; except cssselect.SelectorSyntaxError; log source, article, params
     for param in search_params["find"]:
         if headline_doc := doc.find(param):
             break

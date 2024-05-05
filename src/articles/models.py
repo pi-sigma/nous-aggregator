@@ -79,7 +79,7 @@ class Source(models.Model):
         language (models.CharField): the language of the source
         url (models.URLField): the base url of the source
         paths (models.JSONField): a list of paths, each of which is appended to
-            the base url to tell the scraper where to look for hyper-links
+            the base url to tell the scraper where to look for links
             ('https://example.com/path1/')
         regex (models.CharField): a regular expression for filtering links
         javascript_required (models.BooleanField): True if JavaScript must be rendered
@@ -89,10 +89,12 @@ class Source(models.Model):
         summary_selectors (models.JSONField): information about the CSS selectors
             needed to extract the summary of an article
 
+    Relations:
+        sitemap (models.OneToOneField): information about the HTML/CSS structure
+            of the page required for scraping
+
     Methods:
         __str__: string representation of the model for the admin area
-        to_dict: creates a dictionary with the information required by the
-            scraper
     """
 
     title = models.CharField(
@@ -123,9 +125,6 @@ class Source(models.Model):
         max_length=512,
         help_text=_("The url of the source"),
     )
-    #
-    # data related to scraping
-    #
     paths = models.JSONField(
         help_text=_(
             "List of resource paths where the scraper will look for articles"
@@ -176,11 +175,59 @@ class Source(models.Model):
     def __str__(self) -> str:
         return f"{self.title}"
 
+
+class Sitemap(models.Model):
+    source = models.OneToOneField(
+        to=Source,
+        on_delete=models.CASCADE,
+    )
+    paths = models.JSONField(
+        help_text=_(
+            "List of resource paths where the scraper will look for articles"
+        ),
+    )
+    regex = models.CharField(
+        max_length=255,
+        blank=True,
+        help_text=(
+            "Regular expression for filtering hyper-links found at the resource paths"
+        ),
+    )
+    javascript_required = models.BooleanField(
+        default=False,
+        help_text=_(
+            "Whether the parsing of articles by this source requires rendering "
+            "of JavaScript"
+        ),
+    )
+    headline_search_params_find = models.JSONField(
+        help_text=_(
+            "Selectors for extracting the headline of articles"
+        ),
+    )
+    headline_search_params_remove = models.JSONField(
+        help_text=_(
+            "Selectors for HTML elements that need to be removed from the headline"
+        ),
+    )
+    summary_search_params_find = models.JSONField(
+        default=str,
+        help_text=_(
+            "Selectors for extracting the summary of articles"
+        ),
+    )
+    summary_search_params_remove = models.JSONField(
+        default=list,
+        help_text=_(
+            "Selectors for HTML elements that need to be removed from the summary"
+        ),
+    )
+
     def to_dict(self):
-        sitemap = {
-            "base_url": self.url,
+        return {
+            "base_url": self.source.url,
             "paths": self.paths,
-            "language": self.language,
+            "language": self.source.language,
             "javascript_required": self.javascript_required,
             "filter": regex.compile(self.regex),
             "search_params": {
@@ -194,4 +241,32 @@ class Source(models.Model):
                 },
             },
         }
-        return sitemap
+
+
+class RSSFeed(models.Model):
+    source = models.ForeignKey(
+        to=Source,
+        on_delete=models.CASCADE,
+        related_name="rss_feeds",
+        help_text=_("Map with information for retrieving RSS feed"),
+    )
+    url = models.URLField(
+        unique=True,
+        max_length=512,
+        help_text=_("The url of the RSS feed"),
+    )
+    use_guid = models.BooleanField(
+        default=False,
+        help_text=_("Use guid field for retrieving link (default: 'link')")
+    )
+    time_format = models.CharField(
+        max_length=64,
+        help_text=_("Format string for converting str to datetime")
+    )
+
+    def to_dict(self):
+        return {
+            "url": self.url,
+            "use_guid": self.use_guid,
+            "time_format": self.time_format,
+        }

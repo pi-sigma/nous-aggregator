@@ -9,7 +9,7 @@ django_settings_module = "config.settings"
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "config.settings"
 
-[too.pytype]
+[tool.pytype]
 python_version = 3.11
 inputs = ["src/articles/management", "src/articles/scraper", "src/articles/*.py"]
 disable = "import-error"
