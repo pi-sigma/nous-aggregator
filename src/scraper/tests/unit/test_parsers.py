@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 from pyquery import PyQuery
 
-from scraper.parser import find_headline, find_language, find_summary, parse
+from scraper.parser import find_description, find_language, find_title, parse
 
 from ..utils import read_file
 
@@ -17,24 +17,24 @@ URL_TAIWAN = "https://www.aljazeera.com/news/2024/2/10/how-taiwans-elections-cha
 
 
 @pytest.mark.parametrize("page", ["asian_cup", "indonesia", "taiwan"])
-def test_find_headline(sitemap_aj, expected_aj, page) -> None:
+def test_find_title(sitemap_aj, expected_aj, page) -> None:
     html = read_file(directory=FILES_DIR, file_name=f"{page}.html")
     doc = PyQuery(html)
 
-    headline_text = find_headline(doc, sitemap_aj, url="dummy")
+    title_text = find_title(doc, sitemap_aj, url="dummy")
 
-    assert headline_text == expected_aj[f"{page}"]["headline"]
+    assert title_text == expected_aj[f"{page}"]["title"]
 
 
 @pytest.mark.parametrize("page", ["asian_cup", "indonesia", "taiwan"])
-def test_find_summary(sitemap_aj, expected_aj, page) -> None:
+def test_find_description(sitemap_aj, expected_aj, page) -> None:
     html = read_file(directory=FILES_DIR, file_name=f"{page}.html")
     doc = PyQuery(html)
 
-    summary = find_summary(doc, sitemap_aj, url="https://www.example.com")
+    description = find_description(doc, sitemap_aj, url="https://www.example.com")
 
-    assert summary
-    assert summary == expected_aj[f"{page}"]["summary"]
+    assert description
+    assert description == expected_aj[f"{page}"]["description"]
 
 
 @pytest.mark.parametrize("page", ["asian_cup", "indonesia", "taiwan"])
@@ -42,13 +42,13 @@ def test_find_language(sitemap_aj, expected_aj, page) -> None:
     html = read_file(directory=FILES_DIR, file_name=f"{page}.html")
     doc = PyQuery(html)
 
-    headline = find_headline(doc, sitemap_aj, url="dummy")
-    summary = find_summary(doc, sitemap_aj, url="https://www.example.com")
+    title = find_title(doc, sitemap_aj, url="dummy")
+    description = find_description(doc, sitemap_aj, url="https://www.example.com")
 
-    assert headline
-    assert summary
+    assert title
+    assert description
 
-    lang = find_language(summary, headline, doc, url="dummy")
+    lang = find_language(description, title, doc, url="dummy")
 
     assert lang == expected_aj[f"{page}"]["language"]
 

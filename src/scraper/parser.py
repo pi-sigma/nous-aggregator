@@ -25,65 +25,67 @@ def generate_filtered_links(html: str, sitemap: dict) -> Generator[str, None, No
                 yield urllib.parse.urljoin(sitemap["base_url"], link)
 
 
-def find_headline(doc: PyQuery, sitemap: dict, url: str) -> Optional[str]:
+def find_title(doc: PyQuery, sitemap: dict, url: str) -> Optional[str]:
     """ Use `doc` + `sitemap` to extract headline from article at `url` """
 
-    search_params = sitemap["search_params"]["headline"]
+    search_params = sitemap["search_params"]["title"]
 
     if not search_params.get("find", ""):
-        logger.warning("No search params for headline of %s", url)
+        logger.warning("No search params for title of %s", url)
         return None
 
-    # TODO: error handling; except cssselect.SelectorSyntaxError; log source, article, params
+    # TODO: error handling; except cssselect.SelectorSyntaxError
     for param in search_params["find"]:
-        if headline_doc := doc.find(param):
+        if title_doc := doc.find(param):
             break
 
-    if not headline_doc:
+    if not title_doc:
         return None
 
-    for item in search_params.get("remove", []):
-        headline_doc(f"{item}").remove()
+    if remove_params := search_params.get("remove", []):
+        for item in remove_params:
+            title_doc(f"{item}").remove()
 
     try:
-        headline_text = headline_doc.text().strip()
+        title_text = title_doc.text().strip()
     except AttributeError:
         return None
 
-    return headline_text
+    return title_text
 
 
-def find_summary(doc: PyQuery, sitemap: dict, url: str) -> Optional[str]:
+def find_description(doc: PyQuery, sitemap: dict, url: str) -> Optional[str]:
     """ Use `doc` + `sitemap` to extract summary from article at `url` """
 
-    search_params = sitemap["search_params"]["summary"]
+    search_params = sitemap["search_params"]["description"]
 
     if not search_params.get("find", ""):
         logger.warning("No search params for summary of %s", url)
         return None
 
     for param in search_params["find"]:
-        if summary_doc := doc.find(param):
+        if description_doc := doc.find(param):
             break
 
-    if not summary_doc:
+    if not description_doc:
         return None
 
-    for item in search_params.get("remove", []):
-        summary_doc(f"{item}").remove()
+    if remove_params := search_params.get("remove", []):
+        for item in remove_params:
+            description_doc(f"{item}").remove()
 
     try:
-        summary_text = summary_doc.text().strip()
+        description_text = description_doc.text().strip()
     except AttributeError:
         return None
 
-    return summary_text[:1000]
+    return description_text[:1000]
 
 
-def find_language(summary: str, headline: str, doc: PyQuery, url: str) -> Optional[str]:
+def find_language(description: str, title: str, doc: PyQuery, url: str) -> Optional[str]:
     """ Detect the language of the page at `url` """
 
-    for item in (summary, headline, doc.text()):
+    for item in (description, title, doc.text()):
         if item:
             try:
                 language = langdetect.detect(item)
@@ -99,24 +101,24 @@ def find_language(summary: str, headline: str, doc: PyQuery, url: str) -> Option
 def parse(html: str, sitemap: dict, url: str) -> Optional[str]:
     doc = PyQuery(html)
 
-    headline = find_headline(doc, sitemap=sitemap, url=url)
-    if headline is None:
-        logger.warning("No headline for %s", url)
+    title = find_title(doc, sitemap=sitemap, url=url)
+    if title is None:
+        logger.warning("No title for %s", url)
         return None
 
-    summary = find_summary(doc, sitemap=sitemap, url=url)
-    if summary is None:
+    description = find_description(doc, sitemap=sitemap, url=url)
+    if description is None:
         logger.warning("Missing summary for %s", url)
-        summary = "No description"
+        description = "No description"
 
-    language = find_language(summary, headline, doc, url)
+    language = find_language(description, title, doc, url)
     if language is None:
         language = sitemap["language"]
 
     article = {
-        "headline": headline,
-        "slug": slugify(headline),
-        "summary": summary,
+        "title": title,
+        "slug": slugify(title),
+        "description": description,
         "language": language,
         "url": url,
         "source_link": sitemap["base_url"],

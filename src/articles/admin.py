@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.admin import ModelAdmin, StackedInline
 
-from .models import Article, RSSFeed, Sitemap, Source
+from .models import Article, Feed, Sitemap, Source
 
 admin.site.register(Article)
 
@@ -12,7 +12,7 @@ class SitemapInline(StackedInline):
 
 
 class RSSInline(StackedInline):
-    model = RSSFeed
+    model = Feed
     classes = ["collapse"]
     extra = 0
 

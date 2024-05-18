@@ -78,16 +78,16 @@ async def test_collect_metadata(
         (article for article in articles if article["url"] == "https://indonesia.com")
     )
 
-    assert article_indonesia["headline"] == expected_aj["indonesia"]["headline"]
+    assert article_indonesia["title"] == expected_aj["indonesia"]["title"]
     assert article_indonesia["slug"] == expected_aj["indonesia"]["slug"]
-    assert article_indonesia["summary"] == expected_aj["indonesia"]["summary"]
+    assert article_indonesia["description"] == expected_aj["indonesia"]["description"]
     assert article_indonesia["language"] == expected_aj["indonesia"]["language"]
 
     article_taiwan = next(
         (article for article in articles if article["url"] == "https://taiwan.com")
     )
 
-    assert article_taiwan["headline"] == expected_aj["taiwan"]["headline"]
+    assert article_taiwan["title"] == expected_aj["taiwan"]["title"]
     assert article_taiwan["slug"] == expected_aj["taiwan"]["slug"]
-    assert article_taiwan["summary"] == expected_aj["taiwan"]["summary"]
+    assert article_taiwan["description"] == expected_aj["taiwan"]["description"]
     assert article_indonesia["language"] == expected_aj["taiwan"]["language"]

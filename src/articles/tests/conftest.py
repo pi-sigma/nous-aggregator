@@ -6,9 +6,30 @@ from django.test import Client
 from django.utils import timezone
 
 from ..constants import Language, PublicationType
-from ..models import Article, Source
+from ..models import Article, Sitemap, Source
 
 
+# Sitemaps
+@pytest.fixture
+def sitemap_values(source_values):
+    return {
+        "source": Source(**source_values),
+        "paths": ["world/"],
+        "javascript_required": False,
+        "regex": "[0-9]{4}/[0-9]{2}/[0-9]{2}",
+        "title_search_params_find": "h1",
+        "title_search_params_remove": None,
+        "description_search_params_find": "",
+        "description_search_params_remove": None,
+    }
+
+
+@pytest.fixture
+def sitemap_instance(sitemap_values):
+    return Sitemap.objects.create(**sitemap_values)
+
+
+# Sources
 @pytest.fixture
 def source_values():
     return {
@@ -17,13 +38,6 @@ def source_values():
         "url": "https://www.hocusbogus.com/",
         "publication_type": PublicationType.newspaper,
         "language": Language.en,
-        "paths": ["world/"],
-        "javascript_required": False,
-        "regex": "[0-9]{4}/[0-9]{2}/[0-9]{2}",
-        "headline_search_params_find": "h1",
-        "headline_search_params_remove": [],
-        "summary_search_params_find": "",
-        "summary_search_params_remove": []
     }
 
 
@@ -40,13 +54,6 @@ def source_values_2():
         "url": "https://www.nonsensical.org/",
         "publication_type": PublicationType.newspaper,
         "language": Language.en,
-        "paths": ["world/"],
-        "javascript_required": False,
-        "regex": "[0-9]{4}/[0-9]{2}/[0-9]{2}",
-        "headline_search_params_find": "h1",
-        "headline_search_params_remove": [],
-        "summary_search_params_find": "",
-        "summary_search_params_remove": []
     }
 
 
@@ -58,9 +65,9 @@ def source_instance_2(source_values_2):
 @pytest.fixture
 def article_values(source_instance) -> Dict[str, Union[datetime, str]]:
     return {
-        "headline": "A cow jumps over the moon",
+        "title": "A cow jumps over the moon",
         "slug": "a-cow-jumps-over-the-moon",
-        "summary": "Lorem dolor sit amet...",
+        "description": "Lorem dolor sit amet...",
         "url": "https://www.hocusbogus.com/2022/05/08/foobar",
         "source": source_instance,
         "created_at": timezone.localtime(),
@@ -70,9 +77,9 @@ def article_values(source_instance) -> Dict[str, Union[datetime, str]]:
 @pytest.fixture
 def article_values_m(source_values) -> Dict[str, Union[Source, datetime, str]]:
     return {
-        "headline": "A cow jumps over the moon",
+        "title": "A cow jumps over the moon",
         "slug": "a-cow-jumps-over-the-moon",
-        "summary": "Lorem dolor sit amet...",
+        "description": "Lorem dolor sit amet...",
         "url": "https://www.hocusbogus.com/2022/05/08/foobar",
         "source": Source(**source_values),
         "created_at": timezone.localtime(),
@@ -87,9 +94,9 @@ def article_instance(article_values):
 @pytest.fixture
 def article_values_2(source_instance) -> Dict[str, Union[datetime, str]]:
     return {
-        "headline": "The moon is made of cheese",
+        "title": "The moon is made of cheese",
         "slug": "the-moon-is-made-of-cheese",
-        "summary": "Consectetur adipiscing elit, sed do eiusmod tempor incididunt...",
+        "description": "Consectetur adipiscing elit, sed do eiusmod tempor incididunt...",
         "url": "https://www.nonsensical.org/2022/05/08/baz",
         "source": source_instance,
         "created_at": timezone.localtime(),

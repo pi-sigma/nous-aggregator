@@ -6,7 +6,7 @@ import aiohttp
 from aiohttp import ClientSession
 from aiohttp.web_exceptions import HTTPError
 
-from . import headers, parser
+from scraper import headers, parser
 
 logger: logging.Logger = logging.getLogger(__name__)
 
@@ -25,7 +25,7 @@ class Spider:
             metadata
     """
 
-    headers = headers.headers
+    headers = headers
 
     def __init__(self, starting_urls: list[str], sitemap: dict) -> None:
         self.sitemap: dict = sitemap

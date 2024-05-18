@@ -20,8 +20,8 @@
 	    <li>
 	      <div class="article-headline">
 		<a class="article-link main-text"
-		   title="{{ article.headline }}&#10;&#10;{{ article.summary|slice:":200" }}...&#10;&#10;{{ article.created_at|naturaltime }}"
-		   href="{{ article.url }}">{{ article.headline}}
+		   title="{{ article.title }}&#10;&#10;{{ article.description|slice:":200" }}...&#10;&#10;{{ article.created_at|naturaltime }}"
+		   href="{{ article.url }}">{{ article.title}}
 		</a>
 	      </div>
 	    </li>

@@ -1,8 +1,5 @@
 """
-Settings are loaded depending on the value of the DJANGO_ENV environment variable,
-
-On the production server, DJANGO_ENV should be left undefined
-(hence the production settings are loaded by default).
+Settings are loaded depending on the DJANGO_ENV environment variable,
 """
 
 from decouple import config

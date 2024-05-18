@@ -58,10 +58,7 @@ jobs:
           SECRET_KEY: dummy
           DJANGO_ENV: BASE
           SECURE_SSL_REDIRECT: False
-        run: |
-          pytest src/articles/tests/unit/
-          pytest src/articles/tests/integration/
-          pytest src/scraper/tests/
+        run: pytest
 
   #
   # Migrations

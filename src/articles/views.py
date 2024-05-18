@@ -18,7 +18,7 @@ def index(request: Optional[HttpRequest]) -> HttpResponse:
 
 class SearchResultsView(ListView):
     model = Article
-    fields = ["headline", "url", "body"]
+    fields = ["title", "url", "body"]
     template_name = "articles/search_results.html"
 
     def get_context_data(self, **kwargs) -> Dict[str, Any]:
@@ -32,7 +32,7 @@ class SearchResultsView(ListView):
             context.update(
                 {
                     "sources": Source.objects.only("title", "url", "publication_type")
-                                             .filter(articles__headline__iregex=regex)
+                                             .filter(articles__title__iregex=regex)
                                              .distinct(),
                     "query": query,
                 },
@@ -42,4 +42,4 @@ class SearchResultsView(ListView):
     def get_queryset(self):
         query = self.request.GET.get("q")
         regex = r"(?<![a-zA-Z])" + re.escape(query) + r"(?![a-rA-Rt-zT-Z])"
-        return Article.objects.filter(headline__iregex=regex)
+        return Article.objects.filter(title__iregex=regex)

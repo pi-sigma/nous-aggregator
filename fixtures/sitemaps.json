@@ -1,0 +1,241 @@
+[
+{
+    "model": "articles.sitemap",
+    "pk": 1,
+    "fields": {
+        "source": 1,
+        "paths": [
+            "news/"
+        ],
+        "regex": "(?<!liveblog)/[0-9]{4}/[0-9]+/[0-9]+/(?!.*terms-and-conditions/|.*community-rules-guidelines/|.*eu-eea-regulatory|.*code-of-ethics)",
+        "javascript_required": false,
+        "title_search_params_find": [
+            "h1"
+        ],
+        "title_search_params_remove": null,
+        "description_search_params_find": [
+            ".p1",
+            "p"
+        ],
+        "description_search_params_remove": null
+    }
+},
+{
+    "model": "articles.sitemap",
+    "pk": 2,
+    "fields": {
+        "source": 2,
+        "paths": [
+            "hub/world-news/",
+            "hub/business/"
+        ],
+        "regex": "article/",
+        "javascript_required": false,
+        "title_search_params_find": [
+            ".Page-headline"
+        ],
+        "title_search_params_remove": null,
+        "description_search_params_find": [
+            ".RichTextBody"
+        ],
+        "description_search_params_remove": null
+    }
+},
+{
+    "model": "articles.sitemap",
+    "pk": 3,
+    "fields": {
+        "source": 3,
+        "paths": [
+            "world/",
+            "USA/"
+        ],
+        "regex": "USA/.*[0-9]{4}/[0-9]{4}/|World/.*[0-9]{4}/[0-9]{4}/",
+        "javascript_required": false,
+        "title_search_params_find": [
+            "h1"
+        ],
+        "title_search_params_remove": null,
+        "description_search_params_find": [
+            "div > .story-two"
+        ],
+        "description_search_params_remove": [
+            "aside",
+            "div"
+        ]
+    }
+},
+{
+    "model": "articles.sitemap",
+    "pk": 4,
+    "fields": {
+        "source": 4,
+        "paths": [
+            ""
+        ],
+        "regex": "[0-9]{4}/[0-9]{2}/[0-9]{2}/(?!.*contact-us-form/|.*parry-awarded|.*robert-parrys-legacy)[a-z]+(?!.*policy)(?!.*live)(?!.*fund-drive)",
+        "javascript_required": false,
+        "title_search_params_find": [
+            "h1"
+        ],
+        "title_search_params_remove": null,
+        "description_search_params_find": [
+            ".entry-content"
+        ],
+        "description_search_params_remove": [
+            "div"
+        ]
+    }
+},
+{
+    "model": "articles.sitemap",
+    "pk": 5,
+    "fields": {
+        "source": 5,
+        "paths": [
+            "category/politics/",
+            "category/economics/",
+            "category/interviews/",
+            "category/history/"
+        ],
+        "regex": "[0-9]{4}/[0-9]{2}/",
+        "javascript_required": false,
+        "title_search_params_find": [
+            ".title > span"
+        ],
+        "title_search_params_remove": null,
+        "description_search_params_find": [
+            ".details .tagline"
+        ],
+        "description_search_params_remove": null
+    }
+},
+{
+    "model": "articles.sitemap",
+    "pk": 6,
+    "fields": {
+        "source": 6,
+        "paths": [
+            "section/world/",
+            "section/business/"
+        ],
+        "regex": "(?<!/es/)(?<!/live/)[0-9]{4}/[0-9]{2}/[0-9]{2}/",
+        "javascript_required": false,
+        "title_search_params_find": [
+            "h1"
+        ],
+        "title_search_params_remove": [],
+        "description_search_params_find": "[name='articleBody']",
+        "description_search_params_remove": [
+            "figure",
+            "span"
+        ]
+    }
+},
+{
+    "model": "articles.sitemap",
+    "pk": 7,
+    "fields": {
+        "source": 7,
+        "paths": [
+            "sections/world/"
+        ],
+        "regex": "/[0-9]{4}/[0-9]{2}/[0-9]{2}/",
+        "javascript_required": false,
+        "title_search_params_find": [
+            "h1"
+        ],
+        "title_search_params_remove": null,
+        "description_search_params_find": [
+            "#storytext"
+        ],
+        "description_search_params_remove": [
+            "div"
+        ]
+    }
+},
+{
+    "model": "articles.sitemap",
+    "pk": 8,
+    "fields": {
+        "source": 8,
+        "paths": [
+            "world/"
+        ],
+        "regex": "[0-9]{4}-[0-9]{2}-[0-9]{2}/$",
+        "javascript_required": true,
+        "title_search_params_find": [
+            "h1"
+        ],
+        "title_search_params_remove": null,
+        "description_search_params_find": [
+            "[class*='article-body__paragraph']"
+        ],
+        "description_search_params_remove": null
+    }
+},
+{
+    "model": "articles.sitemap",
+    "pk": 9,
+    "fields": {
+        "source": 9,
+        "paths": [
+            "international/",
+            "politics/",
+            "business/"
+        ],
+        "regex": "archive/[0-9]{4}/",
+        "javascript_required": false,
+        "title_search_params_find": [
+            "h1"
+        ],
+        "title_search_params_remove": null,
+        "description_search_params_find": [
+            "[class*='ArticleBody']"
+        ],
+        "description_search_params_remove": null
+    }
+},
+{
+    "model": "articles.sitemap",
+    "pk": 10,
+    "fields": {
+        "source": 10,
+        "paths": [
+            "politics/",
+            "justice/",
+            "world/"
+        ],
+        "regex": "[0-9]{4}/[0-9]{2}/[0-9]{2}",
+        "javascript_required": false,
+        "title_search_params_find": [
+            "h1"
+        ],
+        "title_search_params_remove": null,
+        "description_search_params_find": [
+            ".post__excerpt"
+        ],
+        "description_search_params_remove": null
+    }
+},
+{
+    "model": "articles.sitemap",
+    "pk": 11,
+    "fields": {
+        "source": 11,
+        "paths": [
+            "Top_News/World-News/"
+        ],
+        "regex": "[0-9]{4}/[0-9]{2}/[0-9]{2}/",
+        "javascript_required": false,
+        "title_search_params_find": [
+            "h1"
+        ],
+        "title_search_params_remove": null,
+        "description_search_params_find": [
+            "article"
+        ],
+        "description_search_params_remove": null
+    }
+}
+]

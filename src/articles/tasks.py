@@ -1,65 +1,98 @@
 import json
 import logging
+from typing import Optional
 
 from celery import group, shared_task
 from django.db.utils import DatabaseError
 from django.utils import timezone
 
+import rss
 import scraper
-from config.scraper import tasks as scraper_tasks
 
 from .models import Article, Source
 
 logger = logging.getLogger("__name__")
 
 
+def create_articles(article_data: list[dict], source: Source) -> None:
+    """
+    Try bulk create, revert to individual DB saves in case of error
+    """
+    try:
+        Article.objects.bulk_create([
+            Article(
+                title=article["title"],
+                slug=article["slug"],
+                source=source,
+                description=article["description"],
+                language=article["language"],
+                url=article["url"],
+                created_at=article.get("pubdate") or timezone.now(),
+            ) for article in article_data
+        ], ignore_conflicts=True)
+    except DatabaseError as exc:
+        logger.error("Bulk create failed", exc_info=exc)
+        for article in article_data:
+            try:
+                Article.objects.create(
+                    title=article["title"],
+                    slug=article["slug"],
+                    source=source,
+                    description=article["description"],
+                    language=article["language"],
+                    url=article["url"],
+                    created_at=article.get("pubdate") or timezone.now(),
+                )
+            except DatabaseError as exc:
+                logger.error("DB save failed for %s", article["url"], exc_info=exc)
+
+
 @shared_task
-def get_articles_for_source(source_title: str) -> None:
+def get_feed_articles_for_source(source_title: str, time_delta: int):
     source: Source = Source.objects.get(title=source_title)
-    sitemap = source.to_dict()
+    reader = rss.Reader(feeds=source.feeds, time_delta=time_delta)
+
+    reader.get_feed()
+    article_data = [item for item in reader.articles]
+
+    create_articles(article_data, source)
+
+
+@shared_task
+def scrape_articles_from_source(source_title: str):
+    source: Source = Source.objects.get(title=source_title)
+    sitemap = source.sitemap.to_dict()
     starting_urls = [
         sitemap["base_url"] + path for path in sitemap["paths"]
     ]
 
     spider = scraper.Spider(starting_urls, sitemap)
     spider.run()
-    articles = [json.loads(article) for article in spider.articles]
+    article_data = [json.loads(article) for article in spider.articles]
 
-    # try bulk create, revert to individual db saves in case of error
-    try:
-        Article.objects.bulk_create([
-            Article(
-                headline=article_data["headline"],
-                slug=article_data["slug"],
-                source=Source.objects.get(url=article_data["source_link"]),
-                summary=article_data["summary"],
-                language=article_data["language"],
-                url=article_data["url"],
-                created_at=timezone.now(),
-            ) for article_data in articles
-        ], ignore_conflicts=True)
-    except DatabaseError as exc:
-        logger.error("Bulk create failed", exc_info=exc)
-        for article_data in articles:
-            try:
-                Article.objects.create(
-                    headline=article_data["headline"],
-                    slug=article_data["slug"],
-                    source=Source.objects.get(url=article_data["source_link"]),
-                    summary=article_data["summary"],
-                    language=article_data["language"],
-                    url=article_data["url"],
-                    created_at=timezone.now(),
-                )
-            except DatabaseError as exc:
-                logger.error("DB save failed for %s", article_data["url"], exc_info=exc)
+    create_articles(article_data, source)
 
 
 @shared_task
-def get_articles(language: str):
-    task_group = group(
-        get_articles_for_source.s(source_title=title) for title in scraper_tasks["magazines"][language]["titles"]
-    )
+def get_articles(language: str, titles: list, time_delta: Optional[int] = None):
+    """Retrieve articles from RSS feed or by scraping, depending on `time_delta`
+
+    Args:
+        language: the language of the articles
+        titles: the titles of the article sources
+        time_delta: max age (unit agnostic) of the target articles; if specified, articles
+            are retrieved from feed, otherwise scraped
+    """
+    if time_delta:
+        task_group = group(
+            get_feed_articles_for_source.s(source_title=title, time_delta=time_delta)
+            for title in titles
+        )
+    else:
+        task_group = group(
+            scrape_articles_from_source.s(source_title=title) for title in titles
+        )
+
     promise = task_group.apply_async()
     if promise.ready():
         return promise.get()

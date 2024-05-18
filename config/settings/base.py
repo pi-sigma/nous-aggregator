@@ -5,7 +5,7 @@ from typing import Any, Dict
 
 from decouple import Csv, config
 
-from .. import scraper
+from .. import tasks
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -189,11 +189,21 @@ REQUESTS_TIMEOUT = 30
 CELERY_BROKER_URL = config("CELERY_BROKER_URL", "redis://localhost:6379")
 CELERY_RESULT_BACKEND = config("CELERY_RESULT_BACKEND", "redis://localhost:6379")
 CELERY_BEAT_SCHEDULE = {
-    "get_articles_en": {
+    "scrape_articles_en": {
         "task": "articles.tasks.get_articles",
-        "schedule": scraper.tasks["magazines"]["en"]["schedule"],
+        "schedule": tasks.scrape["articles"]["en"]["schedule"],
         "kwargs": {
             "language": "en",
+            "titles": tasks.scrape["articles"]["en"]["titles"],
+        }
+    },
+    "get_articles_from_feed_en": {
+        "task": "articles.tasks.get_articles",
+        "schedule": tasks.feed["articles"]["en"]["schedule"],
+        "kwargs": {
+            "language": "en",
+            "titles": tasks.feed["articles"]["en"]["titles"],
+            "time_delta": tasks.feed["articles"]["en"]["schedule"],
         }
     }
 }

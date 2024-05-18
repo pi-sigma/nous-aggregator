@@ -5,7 +5,7 @@ import pytest
 from django.utils.text import slugify
 
 from articles.constants import Language, PublicationType
-from articles.models import Source
+from articles.models import Sitemap, Source
 from scraper.spiders import Spider
 
 from ..mocks import AsyncMockResponse
@@ -19,19 +19,29 @@ FILES_DIR: Path = Path(__file__).parent.parent.resolve() / "files" / "articles" 
 #
 @pytest.fixture
 def source():
-    return Source(
+    return Source.objects.create(
         title="Al Jazeera",
         slug=slugify("Al Jazeera"),
         publication_type=PublicationType.newspaper,
         language=Language.en,
         url="https://www.aljazeera.com/",
+    )
+
+
+@pytest.fixture
+def sitemap(source):
+    return Sitemap(
+        source=source,
         paths=["news/"],
-        regex="(?<!liveblog)/[0-9]{4}/[0-9]+/[0-9]+/(?!.*terms-and-conditions/|.*community-rules-guidelines/|.*eu-eea-regulatory|.*code-of-ethics|.*liveblog)",
+        regex=(
+            "(?<!liveblog)/[0-9]{4}/[0-9]+/[0-9]+/(?!.*terms-and-conditions/|"
+            ".*community-rules-guidelines/|.*eu-eea-regulatory|.*code-of-ethics|.*liveblog)"
+        ),
         javascript_required=False,
-        headline_search_params_find=["h1"],
-        headline_search_params_remove=[],
-        summary_search_params_find=[".p1", "p"],
-        summary_search_params_remove=[]
+        title_search_params_find=["h1"],
+        title_search_params_remove=[],
+        description_search_params_find=[".p1", "p"],
+        description_search_params_remove=[]
     )
 
 
@@ -109,7 +119,7 @@ def contents_aj():
 # tests
 #
 @pytest.mark.django_db
-def test_run_spider(source, contents_aj, expected_aj, mocker) -> None:
+def test_run_spider(source, sitemap, contents_aj, expected_aj, mocker) -> None:
     # setup
     def return_value(*args, **kwargs):
         for key, value in contents_aj.items():
@@ -119,7 +129,7 @@ def test_run_spider(source, contents_aj, expected_aj, mocker) -> None:
     mocker.patch("aiohttp.ClientSession.get", side_effect=return_value)
 
     # asserts
-    sitemap = source.to_dict()
+    sitemap = source.sitemap.to_dict()
     starting_urls = [
         sitemap["base_url"] + path for path in sitemap["paths"]
     ]
@@ -133,10 +143,10 @@ def test_run_spider(source, contents_aj, expected_aj, mocker) -> None:
 
     for expected_data in expected_aj.values():
         article = next(
-            (article for article in articles if article["headline"] == expected_data["headline"])
+            (article for article in articles if article["title"] == expected_data["title"])
         )
         assert article["slug"] == expected_data["slug"]
-        assert article["summary"] == expected_data["summary"]
+        assert article["description"] == expected_data["description"]
         assert article["language"] == expected_data["language"]
         assert article["url"] == expected_data["url"]
         assert article["source_link"] == expected_data["source_link"]

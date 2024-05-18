@@ -1,38 +1,69 @@
 from datetime import datetime, timedelta, timezone
 from xml.etree import ElementTree
 
-# TODO: get from RSSMap
-DELTA = timedelta(hours=1128)
+import dateutil
+from django.utils.text import slugify
+
+from utils.data_structures import hashabledict
+
+from .constants import tzinfos
 
 
-def parse_from_content(content):
+def parse(content: str, time_delta: int) -> list[hashabledict]:
+    """Parse the content of an RSS feed and return article metadata
+
+    Args:
+        content: XML string with RSS feed content
+        time_delta: number representing the max age (unit agnostic) of
+            articles
+
+    Returns:
+        Collection of hashable dicts with article metadata
+    """
     response_xml = ElementTree.fromstring(content)
 
-    articles = response_xml.findall("./channel/item")
+    channel = response_xml.find("./channel")
+    articles = channel.findall("item")
 
-    for elem in articles:
-        # skip old entries
-        pubDate = elem.find("pubDate").text
-        # TODO: from RSSMap
-        format_str = "%a, %d %b %Y %H:%M:%S %z"
-        pubdate = datetime.strptime(pubDate, format_str)
+    data = []
+
+    for article in articles:
+        # 1. title
+        title = article.find("title").text
+
+        # 2. url
+        url = article.find("link").text
+
+        # 3. date (skip old entries)
+        pubdate_string = article.find("pubDate").text
+        pubdate = dateutil.parser.parse(pubdate_string, tzinfos=tzinfos)
         now_utc = datetime.now(timezone.utc)
+        delta = timedelta(hours=time_delta)
 
-        if now_utc - pubdate > DELTA:
+        if now_utc - pubdate > delta:
             continue
 
-        title = elem.find("title").text
-        # TODO: from RSSMap
-        url = elem.find("guid").text
-        description = elem.find("description").text
+        # 4. description
+        description = article.find("description").text
 
-        # TODO: investigate, perhaps get from RSSMap
-        ns = {"dc": "http://purl.org/dc/elements/1.1/"}
-        creators = elem.find(".//dc:creator", ns).text
+        # 5. creators
+        ns = {"dc": "http://purl.org/dc/articleents/1.1/"}
+        if creators := article.find(".//dc:creator", ns):
+            creators = creators.text
 
-        # TODO: return dict (or other DS)
-        print(title)
-        print(url)
-        print(description)
-        print(creators)
-        print("\n")
+        # 6. language
+        language = channel.find("language").text
+
+        article_dict = hashabledict(
+            title=title,
+            slug=slugify(title),
+            url=url,
+            pubdate=pubdate,
+            description=description,
+            creators=creators or "",
+            language=language,
+        )
+
+        data.append(article_dict)
+
+    return data
