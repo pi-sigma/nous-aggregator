@@ -4,10 +4,10 @@ plugins = ["mypy_django_plugin.main"]
 ignore_missing_imports=true
 
 [tool.django-stubs]
-django_settings_module = "config.settings"
+django_settings_module = "nous_aggregator.settings"
 
 [tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "config.settings"
+DJANGO_SETTINGS_MODULE = "nous_aggregator.settings"
 
 [tool.pytype]
 python_version = 3.11
