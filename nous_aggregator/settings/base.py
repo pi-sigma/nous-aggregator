@@ -90,55 +90,6 @@ TEMPLATES = [
 WSGI_APPLICATION = "nous_aggregator.wsgi.application"
 
 
-# Logging
-
-LOG_DIR: Path = BASE_DIR / "logs"
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '[{levelname}] {asctime} [{module}] {process:d} {thread:d} {message}',
-            'style': '{',
-        },
-        'simple': {
-            'format': '[{levelname}] {asctime} [{module}] {message}',
-            'style': '{',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['django'],
-            'propagate': True,
-            'level': 'INFO',
-        },
-        'articles': {
-            'handlers': ['articles'],
-            'propagate': True,
-            'level': 'INFO',
-        },
-    },
-    'handlers': {
-        'django': {
-            'level': 'INFO',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(LOG_DIR, "django.log"),
-            'maxBytes': 100000,
-            'backupCount': 2,
-            'formatter': 'verbose',
-        },
-        'articles': {
-            'level': 'INFO',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(LOG_DIR, "nous_aggregator.log"),
-            'maxBytes': 1024 * 1024 * 10,  # Max 10MB
-            'backupCount': 3,
-            'formatter': 'simple',
-        },
-    },
-}
-
-
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
 

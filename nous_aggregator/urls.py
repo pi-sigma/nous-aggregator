@@ -28,7 +28,7 @@ urlpatterns: List[URLResolver] = [
 ]
 
 
-if config("DJANGO_ENV") == "LOCAL":
+if config("DJANGO_ENV", default="BASE") == "LOCAL":
     urlpatterns += [
         path('__debug__/', include('debug_toolbar.urls')),
     ]
