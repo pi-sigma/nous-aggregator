@@ -1,6 +1,5 @@
 {% extends "articles/base.html" %}
-{% load static %}
-{% load humanize %}
+{% load static humanize strip_html_tags %}
 
 {% block title %}Nous Aggregator{% endblock %}
 
@@ -16,7 +15,7 @@
 	    <li>
 	      <div class="article-headline">
             <a class="article-link main-text"
-               title="{{article.title}}&#10;&#10;{{ article.description|slice:":200"}}...&#10;&#10;{{article.created_at|naturaltime}}"
+               title="{{article.title}}&#10;&#10;{{ article.description|slice:":200"|strip_html_tags}}...&#10;&#10;{{article.created_at|naturaltime}}"
                href="{{ article.url }}">{{ article.title}}
             </a>
 	      </div>
