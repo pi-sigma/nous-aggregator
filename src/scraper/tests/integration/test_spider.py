@@ -7,6 +7,7 @@ from django.utils.text import slugify
 from articles.constants import Language, PublicationType
 from articles.models import Sitemap, Source
 from scraper.spiders import Spider
+from utils.headers import headers
 
 from ..mocks import AsyncMockResponse
 from ..utils import read_file
@@ -133,7 +134,7 @@ def test_run_spider(source, sitemap, contents_aj, expected_aj, mocker) -> None:
     starting_urls = [
         sitemap["base_url"] + path for path in sitemap["paths"]
     ]
-    spider = Spider(starting_urls, sitemap)
+    spider = Spider(starting_urls=starting_urls, sitemap=sitemap, headers=headers)
 
     spider.run()
 

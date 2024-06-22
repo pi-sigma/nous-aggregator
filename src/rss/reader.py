@@ -1,35 +1,34 @@
 import logging
 import random
+from typing import TYPE_CHECKING
 
 import requests
 from requests.exceptions import RequestException
 
-from articles.models import Feed
-from scraper import headers
 from utils.data_structures import hashabledict
 
 from . import parser
+
+if TYPE_CHECKING:
+    from .typing import Feed
 
 logger = logging.getLogger(__name__)
 
 
 class Reader:
     """
-    Class Attributes:
-        headers (list): a collection of HTTP headers
-
     Instance Attributes:
         feeds (list): a list of RSS feeds
-        time_delta (int): the maximum age (unit agnostic) of articles to be
+        headers (list): a collection of HTTP headers
+        time_delta (int): the maximum age (in minutes) of articles to be
             collected
         articles (set): a collection of dicts representing article
             metadata
     """
 
-    headers = headers
-
-    def __init__(self, feeds: list[Feed], time_delta: int):
+    def __init__(self, feeds: list["Feed"], headers: list[dict], time_delta: int):
         self.feeds = feeds
+        self.headers = headers
         self.time_delta = time_delta
         self.articles: set[dict] = set()
 
@@ -44,7 +43,7 @@ class Reader:
             return None
         return content
 
-    def get_articles(self, session: requests.Session, feed: Feed) -> list[hashabledict]:
+    def get_articles(self, session: requests.Session, feed: "Feed") -> list[hashabledict]:
         content = self.connect(session, feed.url)
         if not content:
             return None
@@ -52,7 +51,7 @@ class Reader:
         articles = parser.parse(content, self.time_delta)
         return articles
 
-    def get_feed(self):
+    def get_feeds(self):
         with requests.Session() as session:
             for feed in self.feeds.all():
                 articles = self.get_articles(session, feed)

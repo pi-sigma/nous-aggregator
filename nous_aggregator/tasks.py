@@ -1,7 +1,6 @@
 scrape = {
     "articles": {
         "en": {
-            "schedule": 3,  # minutes
             "titles": [
                 "Al Jazeera",
                 "Associated Press",
@@ -18,7 +17,6 @@ scrape = {
 feed = {
     "articles": {
         "en": {
-            "schedule": 3,  # minutes
             "titles": [
                 "Christian Science Monitor",
                 "New York Times",

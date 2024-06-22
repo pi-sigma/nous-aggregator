@@ -14,7 +14,7 @@ def parse(content: str, time_delta: int) -> list[hashabledict]:
 
     Args:
         content: XML string with RSS feed content
-        time_delta: number representing the max age (unit agnostic) of
+        time_delta: number representing the max age (in minutes) of
             articles
 
     Returns:
@@ -38,7 +38,7 @@ def parse(content: str, time_delta: int) -> list[hashabledict]:
         pubdate_string = article.find("pubDate").text
         pubdate = dateutil.parser.parse(pubdate_string, tzinfos=tzinfos)
         now_utc = datetime.now(timezone.utc)
-        delta = timedelta(hours=time_delta)
+        delta = timedelta(minutes=time_delta)
 
         if now_utc - pubdate > delta:
             continue

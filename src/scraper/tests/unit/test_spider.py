@@ -7,6 +7,7 @@ import pytest
 from aiohttp.web_exceptions import HTTPError
 
 from scraper.spiders import Spider
+from utils.headers import headers
 
 from ..mocks import AsyncMockResponse
 from ..utils import read_file
@@ -16,7 +17,7 @@ FILES_DIR: Path = Path(__file__).parent.parent.resolve() / "files" / "articles" 
 
 @pytest.mark.asyncio
 async def test_connect_error(starting_urls_aj, sitemap_aj, mocker, caplog):
-    spider = Spider(starting_urls_aj, sitemap_aj)
+    spider = Spider(starting_urls_aj, sitemap_aj, headers=headers)
 
     mocker.patch("aiohttp.ClientSession.get", side_effect=HTTPError)
 
@@ -32,7 +33,7 @@ async def test_connect_error(starting_urls_aj, sitemap_aj, mocker, caplog):
 
 @pytest.mark.asyncio
 async def test_collect_links(starting_urls_aj, sitemap_aj, mocker):
-    spider = Spider(starting_urls_aj, sitemap_aj)
+    spider = Spider(starting_urls_aj, sitemap_aj, headers=headers)
     html = read_file(directory=FILES_DIR, file_name="_start.html")
 
     mock_response = AsyncMockResponse(status_code=200, text=html)
@@ -49,7 +50,7 @@ async def test_collect_metadata(
     starting_urls_aj, sitemap_aj, expected_aj, mocker
 ) -> None:
     # setup
-    spider = Spider(starting_urls_aj, sitemap_aj)
+    spider = Spider(starting_urls_aj, sitemap_aj, headers=headers)
     spider.links = {"https://indonesia.com", "https://taiwan.com"}
 
     html_indonesia = read_file(directory=FILES_DIR, file_name="indonesia.html")

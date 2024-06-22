@@ -3,11 +3,13 @@ import logging
 from typing import Optional
 
 from celery import group, shared_task
+from celery.result import allow_join_result
 from django.db.utils import DatabaseError
 from django.utils import timezone
 
 import rss
 import scraper
+from utils.headers import headers
 
 from .models import Article, Source
 
@@ -50,9 +52,9 @@ def create_articles(article_data: list[dict], source: Source) -> None:
 @shared_task
 def get_feed_articles_for_source(source_title: str, time_delta: int):
     source: Source = Source.objects.get(title=source_title)
-    reader = rss.Reader(feeds=source.feeds, time_delta=time_delta)
+    reader = rss.Reader(feeds=source.feeds, headers=headers, time_delta=time_delta)
 
-    reader.get_feed()
+    reader.get_feeds()
     article_data = [item for item in reader.articles]
 
     create_articles(article_data, source)
@@ -66,7 +68,7 @@ def scrape_articles_from_source(source_title: str):
         sitemap["base_url"] + path for path in sitemap["paths"]
     ]
 
-    spider = scraper.Spider(starting_urls, sitemap)
+    spider = scraper.Spider(starting_urls, sitemap, headers=headers)
     spider.run()
     article_data = [json.loads(article) for article in spider.articles]
 
@@ -94,5 +96,5 @@ def get_articles(language: str, titles: list, time_delta: Optional[int] = None):
         )
 
     promise = task_group.apply_async()
-    if promise.ready():
+    with allow_join_result():
         return promise.get()

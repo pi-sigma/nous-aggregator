@@ -3,6 +3,7 @@ import sys
 from pathlib import Path
 from typing import Any, Dict
 
+from celery.schedules import crontab
 from decouple import Csv, config
 
 from .. import tasks
@@ -53,6 +54,8 @@ INSTALLED_APPS = [
     "django.contrib.humanize",
     # nous_aggregator apps
     "articles.apps.ArticlesConfig",
+    "scraper.apps.ScraperConfig",
+    "rss.apps.RSSConfig",
 ]
 
 MIDDLEWARE = [
@@ -142,7 +145,7 @@ CELERY_RESULT_BACKEND = config("CELERY_RESULT_BACKEND", "redis://localhost:6379"
 CELERY_BEAT_SCHEDULE = {
     "scrape_articles_en": {
         "task": "articles.tasks.get_articles",
-        "schedule": tasks.scrape["articles"]["en"]["schedule"],
+        "schedule": crontab(minute="0", hour="*/4"),
         "kwargs": {
             "language": "en",
             "titles": tasks.scrape["articles"]["en"]["titles"],
@@ -150,11 +153,11 @@ CELERY_BEAT_SCHEDULE = {
     },
     "get_articles_from_feed_en": {
         "task": "articles.tasks.get_articles",
-        "schedule": tasks.feed["articles"]["en"]["schedule"],
+        "schedule": crontab(minute="0", hour="*/4"),
         "kwargs": {
             "language": "en",
             "titles": tasks.feed["articles"]["en"]["titles"],
-            "time_delta": tasks.feed["articles"]["en"]["schedule"],
+            "time_delta": 240,  # minutes
         }
     }
 }

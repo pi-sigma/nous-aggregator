@@ -16,19 +16,19 @@
 export CUSTOM_COMPILE_COMMAND="./bin/compile_dependencies.sh"
 
 # Base/production
-uv pip compile \
+pip-compile \
 	"$@" \
 	requirements/base.in
 
 # CI
-uv pip compile \
+pip-compile \
 	--output-file requirements/ci.txt \
 	"$@" \
 	requirements/base.txt \
 	requirements/ci.in
 
 # Development
-uv pip compile \
+pip-compile \
 	--output-file requirements/dev.txt \
 	"$@" \
 	requirements/ci.txt \

@@ -6,30 +6,27 @@ import aiohttp
 from aiohttp import ClientSession
 from aiohttp.web_exceptions import HTTPError
 
-from scraper import headers, parser
+from scraper import parser
 
 logger: logging.Logger = logging.getLogger(__name__)
 
 
 class Spider:
     """
-    Class Attributes:
-        headers (list): a collection of HTTP headers
-
     Instance Attributes:
         sitemap (dict): contains information about a particular page
         starting_urls (list): the urls where each `Spider` instance searches for
             links
+        headers (list): a collection of HTTP headers
         links (set): urls of pages targeted for scraping
         articles (set): a collection of JSON strings representing article
             metadata
     """
 
-    headers = headers
-
-    def __init__(self, starting_urls: list[str], sitemap: dict) -> None:
-        self.sitemap: dict = sitemap
-        self.starting_urls: list[str] = starting_urls
+    def __init__(self, starting_urls: list[str], sitemap: dict, headers: list[dict]) -> None:
+        self.sitemap = sitemap
+        self.starting_urls = starting_urls
+        self.headers = headers
         self.links: set[str] = set()
         self.articles: set[str] = set()
 

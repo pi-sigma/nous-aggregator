@@ -6,6 +6,7 @@ python-decouple
 pyppeteer
 pyquery
 regex
+requests
 sentry-sdk
 
 # Django

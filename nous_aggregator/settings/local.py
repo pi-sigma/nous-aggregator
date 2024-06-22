@@ -41,18 +41,6 @@ LOGGING = {
             'style': '{',
         },
     },
-    'loggers': {
-        'django': {
-            'handlers': ['django'],
-            'propagate': True,
-            'level': 'INFO',
-        },
-        'articles': {
-            'handlers': ['articles'],
-            'propagate': True,
-            'level': 'INFO',
-        },
-    },
     'handlers': {
         'django': {
             'level': 'INFO',
@@ -62,13 +50,35 @@ LOGGING = {
             'backupCount': 2,
             'formatter': 'verbose',
         },
-        'articles': {
+        'project': {
             'level': 'INFO',
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': os.path.join(LOG_DIR, "nous_aggregator.log"),
             'maxBytes': 1024 * 1024 * 10,  # Max 10MB
             'backupCount': 3,
             'formatter': 'simple',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['django'],
+            'propagate': True,
+            'level': 'INFO',
+        },
+        'articles': {
+            'handlers': ['project'],
+            'propagate': True,
+            'level': 'INFO',
+        },
+        'scraper': {
+            'handlers': ['project'],
+            'propagate': True,
+            'level': 'INFO',
+        },
+        'rss': {
+            'handlers': ['project'],
+            'propagate': True,
+            'level': 'INFO',
         },
     },
 }
