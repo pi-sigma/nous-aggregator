@@ -4,7 +4,7 @@
 #
 #    ./bin/compile_dependencies.sh
 #
-aiohttp==3.9.3
+aiohttp==3.9.5
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
