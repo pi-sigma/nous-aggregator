@@ -225,7 +225,7 @@ six==1.16.0
     #   python-dateutil
 smmap==5.0.1
     # via gitdb
-sqlparse==0.4.4
+sqlparse==0.5.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

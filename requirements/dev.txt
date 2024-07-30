@@ -368,7 +368,7 @@ smmap==5.0.1
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   gitdb
-sqlparse==0.4.4
+sqlparse==0.5.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
