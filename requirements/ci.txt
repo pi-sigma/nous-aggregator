@@ -40,7 +40,7 @@ celery==5.3.6
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   pytest-celery
-certifi==2023.7.22
+certifi==2024.7.4
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
