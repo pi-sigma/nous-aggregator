@@ -103,7 +103,7 @@ gunicorn==21.2.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-idna==3.4
+idna==3.7
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
