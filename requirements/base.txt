@@ -88,7 +88,7 @@ sqlparse==0.5.1
     # via django
 tzdata==2023.4
     # via celery
-urllib3==1.26.18
+urllib3==2.2.2
     # via
     #   requests
     #   sentry-sdk
