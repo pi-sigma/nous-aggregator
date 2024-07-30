@@ -193,7 +193,7 @@ requests==2.32.3
     #   -r requirements/base.txt
 rich==13.5.3
     # via bandit
-sentry-sdk==1.39.2
+sentry-sdk==2.11.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

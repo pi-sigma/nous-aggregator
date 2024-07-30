@@ -332,7 +332,7 @@ rich==13.5.3
     #   -r requirements/ci.txt
     #   bandit
     #   pdbr
-sentry-sdk==1.39.2
+sentry-sdk==2.11.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

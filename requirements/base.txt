@@ -78,7 +78,7 @@ regex==2023.8.8
     # via -r requirements/base.in
 requests==2.32.3
     # via -r requirements/base.in
-sentry-sdk==1.39.2
+sentry-sdk==2.11.0
     # via -r requirements/base.in
 six==1.16.0
     # via
