@@ -3,7 +3,6 @@ aiohttp
 langdetect
 psycopg2
 python-decouple
-pyppeteer
 pyquery
 regex
 requests
