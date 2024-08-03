@@ -1,7 +1,6 @@
 # Python
 aiohttp
 langdetect
-psycopg2
 python-decouple
 pyquery
 regex

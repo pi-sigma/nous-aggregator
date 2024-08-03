@@ -145,9 +145,7 @@ prompt-toolkit==3.0.43
     #   -r requirements/base.txt
     #   click-repl
 psycopg2==2.9.9
-    # via
-    #   -c requirements/base.txt
-    #   -r requirements/base.txt
+    # via -r requirements/ci.in
 pygments==2.16.1
     # via rich
 pyquery==2.0.0

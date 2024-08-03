@@ -1,5 +1,5 @@
 # Base
-FROM python:3.11-slim-bookworm AS BASE
+FROM python:3.11-slim-bookworm AS base
 
 # build deps
 RUN apt update && apt upgrade && apt install -y --no-install-recommends \
@@ -15,7 +15,7 @@ RUN pip install -r /app/requirements/dev.txt
 
 
 # Final
-FROM python:3.11-slim-bookworm AS FINAL
+FROM python:3.11-slim-bookworm AS final
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
